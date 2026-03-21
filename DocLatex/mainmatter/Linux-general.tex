@@ -1,0 +1,635 @@
+\chapter{Generalità sul sistema Linux}
+\label{chapter:Linux-generico}
+%In questa primissima parte si introduce al sistema Linux, dietro questa scelta ci sono due motivi principali, il primo è legato al networking, infatti è il sistema operativo maggiormente installato su macchine adibite ad essere utilizzate come server, il secondo è più personale, infatti usando Windows da tempo ho notato come alcuni meccanismi per la gestione di alcune attività fondamentali sul sistema siano poco chiari e trasparenti impedendo quindi di avere un controllo completo sulla macchina, ad esempio la gestione delle installazioni un pò confusionaria perchè tende a sparge ovunque file oppure il basso controllo che il sistema permette in termini di personalizzazione e sicurezza inteso come impossibilità di compiere queste operazioni in modo trasparente, infatti spesso il tutto avviene attraverso altri programmi o cumunque interfacce che rendono poco chiaro tutto il proceso, o ancora aggiornamenti su aggiornamenti di componenti software mai usati usati ma che servono per far funzionare altri servizi che a loro volta magari uso molto poco.
+%Essendo l'argomento Linux molto grande alcune cose saranno trattate in modo abbastanza superficiale e solo la parte riservata alla distribuzione Ubuntu sarà più dettagliata.
+
+%\section{Storia di Linux e generalità sul sistema}
+%\label{sec:Linux-generico}
+Il termine Linux è spesso usato in modo improprio infatti erroneamente si crede che Linux sia un sistema operativo, in realtà non è così e \tb{Linux è semplicemente il nome del kernel che Linus Torvalds creò nel 1991} inspirandosi a quello adottato dal sistema operativo UNIX sviluppato negli anni '70.
+Linux è distribuito sotto licenza GNU GPL, che \tb{consente a chiunque di usarlo, modificarlo e condividerlo}, un \tb{sistema operativo che incorpora il kernel Linux è chiamato \ti{distribuzione}}, semplificando al massimo quello che è un sistema operativo possiamo dire che una distribuzione è un OS con kernel Linux più tanti altri software che permettono all'utente di dialogare in maniera più o meno diretta con il kernel. Con il tempo sono nate moltissime distribuzioni ciascuna delle quali risponde a particolari esigenze utente, tutte queste distribuzioni si possono raccogliere sotto 5 grandi "famiglie":
+\begin{itemize}
+    \item \textbf{Debian}: una delle distribuzioni più rispettate e antiche nel panorama Linux. È la base di molte altre distribuzioni, come Ubuntu e Linux Mint. La sua filosofia \tb{si concentra sulla stabilità, la sicurezza e la libertà del software}. Debian è nota per essere molto robusta e per il suo ciclo di rilascio lungo e prevedibile. Non è sempre la più aggiornata, ma offre una grande affidabilità, motivo per cui viene spesso utilizzata in ambienti server.
+    \item \textbf{Red Hat}: è una delle distribuzioni più influenti e storiche, ed è la base per altre distribuzioni come CentOS (prima della sua transizione a CentOS Stream) e Fedora. Oggi, Red Hat è \tb{focalizzata sul mercato enterprise}, offrendo Red Hat Enterprise Linux (RHEL), una distribuzione orientata alle aziende con supporto commerciale.
+    \item \textbf{Slackware}: una delle distribuzioni più antiche e minimaliste, creata da Patrick Volkerding nel 1993. Non si basa su altre distribuzioni, ma è una distribuzione indipendente. È famosa per la sua \tb{filosofia di minimalismo e per l'approccio "fai-da-te"}, che la rende adatta a utenti avanzati e amministratori di sistema che desiderano un controllo completo su ciò che viene installato.
+    \item \textbf{Arch}: distribuzione indipendente, \tb{famosa per la sua filosofia KISS (Keep It Simple, Stupid). Arch è minimalista e ti offre la possibilità di costruire il sistema operativo completamente da zero}, scegliendo solo ciò che vuoi installare. Sebbene non abbia altre distribuzioni dirette da cui proviene, molte altre distribuzioni, come Manjaro, si basano su di essa.
+    \item \textbf{Gentoo}: una distribuzione Linux avanzata che offre \tb{un alto livello di personalizzazione. È basata sul principio di compilare il software direttamente dal codice sorgente}, ottimizzando ogni pacchetto per l'hardware specifico dell'utente. Anche se non ha molte "derivate" ufficiali, ci sono alcuni progetti che si basano su Gentoo o che ne adottano la filosofia di compilazione personalizzata, come Calculate Linux.
+\end{itemize}
+Sebbene parlare solo in questi termini di distribuzioni Linux sia abbastanza riduttivo l'obbiettivo di questa parte è comunque solo fornire una panoramica andando a evidenziare i principali punti di forza delle principali.
+
+
+\section{Pacchetti software}
+\label{sec:Pacchetti-software}
+Tutte le distribuzioni possiedono uno strumento chiamato \tb{\ti{package manager}}, questo ha la funzione di \tb{installare tutti i vari pacchetti che servono per far funzionare una certa applicazione}. I package manager sono collegati ad una repository online da cui scaricano, su richiesta dell'utente, i pacchetti per provvedere ad installarli sulla macchina, dunque è facile capire che \tb{cambiando package manager l'utente ha accesso ad un certo catalogo di applicazioni installabili} e quindi la scelta di quest'ultimo è importante anche se in realtà questo è qualcosa che riguarda maggiormente utenti avanzati che magari cercano applicazioni molto specifiche disponibili sono attraverso certi gestori di pacchetti.
+\tb{Debian, Ubuntu e Linux Mint, utilizzano il package manager \ti{dpkg}} il quale gestisce i pacchetti software indicati, in questo caso, come \ti{pacchetti DEB}, invece Red Hat, Fedora e CentOS utilizzano il package manager \tb{\it{rpm}} il quale gestisce i pacchetti software chiamati \ti{pacchetti RPM}. Nel seguito si vedranno alcuni comandi molto elementari per interagire con package manager dpkg.
+
+\subsection{Installazione di un pacchetto con dpkg}
+\label{subsec:Installazione-di-un-pacchetto-con-dpkg}
+Vogliamo ora capire come installare un applicazione sul sistema oprativo, il package manager installato è dpkg, come prima cosa si deve \tb{verificare che l'applicazione che si vuole installare non sia già presente nel sistema}, cosa che può accadere usando distribuzioni che la preinstallano, per fare questa verifica si scrive nel terminale il seguente comando e si osserva la risposta fornita dal sistema, nell'esempio il pacchetto ricercato è \ti{figlet}:
+\begin{cmd}
+	$ finglet
+	finglet: command not found
+\end{cmd}
+
+nel caso la risposta del sistema sia come quella sopra riportata significa che il programma figlet non è insatllato, \tb{per verificare la disponibilità del pacchetto nella ropository del gestore si possono usare i comandi} \sh{apt search <nome\_pacchetto>} o \sh{apt-cache search <nome\_pacchetto>} che, a differenza del primo comando, permette di ottenere maggiori informazioni sul pacchetto disponibile, ricollegandoci all'esempio sopra digitiamo:
+\begin{cmd}
+	$ apt-cache search figlet
+	figlet - Make large character ASCII banners out of ordinary text
+\end{cmd}
+
+l'output sopra mostrato fornisce informazioni sul pacchetto ricercato e lo rende disponibile ad essere installato, per questa fase \tb{il package manager richiede  autorizzazioni speciali che solo l'utente chiamato root possiede e che eventualmente può concedere agli altri}, senza scendere ora nel dettaglio di questo aspetto, poichè il package manager richiede tali diritti, l'utente non root deve scrivere il \tb{comando con il prefisso \sh{sudo} che praticamente richiede all'utente la password dell'utente root prima di iniziare ad eseguire il comando}. I comandi per installare sono \sh{apt-get install <nome\_pacchetto>} che quando eseguito installa il pacchetto e mostra in output sul terminale vari aspetti tecnici dell'installazione e \sh{apt install <nome\_pacchetto>} versione più userfriendly del comando sopra in quanto installa e mostra all'utente solo eventuali errori oltre ad avere un output colorato, in riferimento all'esempio:
+\begin{cmdc}{\tc{apt install}}{apt-install}
+	$ sudo apt-get install figlet
+	Reading package lists... Done
+	Building dependency tree
+	Reading state information... Done
+	The following NEW packages will be installed:
+	figlet
+	0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+\end{cmdc}
+
+ovviamente l'output può variare da pacchetto a pacchetto ma non solo perchè ogni pacchetto richiede, per funzionare in modo adeguato, delle \ti{dipendenze} ovvero altri pacchetti pertanto se una certa applicazione viene installata su una distribuzione particolarmente minimale è possibile che durante il processo di installazione il \tb{package manager provveda anche all'istallazione delle dipendenze collegate}.
+
+\subsection{Rimozione di un pacchetto con dpkg}
+\label{subsec:Rimozione-di-un-pacchetto-con-dpkg}
+La rimozione di un' aplicazione prevede \tb{la cancellazione sul sistema di tutti i file connessi ad essa}, i comandi usati sono \sh{apt-get remove <nome\_file>} oppure \sh{apt remove <nome\_file>} con la solita differenza fra i due che il primo fornisce maggiori dettagli sul processo, \tb{tali comandi tuttavia lasciano nel sistema \ti{i file di configurazione} dell'applicazione} in modo che se in futuro l'utente deciderà di installare nuovamente l'applicazione questa sarà automaticamente configurata usando i file di configurazione precedentemente non rimossi, se si \tb{vogliono eliminare anche i file di configurazione al comando classico, al posto di \tc{remove} va scritto \tc{purge}}, in riferimento all'esempio portato nella sezione \ref{subsec:Installazione-di-un-pacchetto-con-dpkg}:
+%\begin{lstlisting}[style = shell, , caption=\tc{apt remove}]
+%    $ sudo apt-get remove figlet
+%    Reading package lists... Done
+%    Building dependency tree
+%    Reading state information... Done
+%    The following packages will be REMOVED:
+%    figlet
+%    0 upgraded, 0 newly installed, 1 to remove and 0 not upgraded.
+%    After this operation, 741 kB disk space will be freed.
+%\end{lstlisting}
+\begin{cmdc}{\tc{apt remove}}{apt-remove}
+	$ sudo apt-get remove figlet
+	Reading package lists... Done
+	Building dependency tree
+	Reading state information... Done
+	The following packages will be REMOVED:
+	figlet
+	0 upgraded, 0 newly installed, 1 to remove and 0 not upgraded.
+	After this operation, 741 kB disk space will be freed.
+\end{cmdc}
+
+
+\section{Ambienti Desktop Linux}
+\label{sec:Ambienti-Desktop-Linux}
+Come spiegato una distribuzione Linux è sostanzialmente un insieme di software strettamente connessi al kernel Linux che permettono all'utente di utilizzare in determinati modi la macchina, \tb{l'\ti{ambiente desktop} consiste in un gruppo ristretto di questi software che determina l'esperienza utente complessiva in termini di}:
+\begin{itemize}
+    \item \textbf{Gestione delle finestre}: ridimensionamento e distribuzione delle finestre nelle interfacce.
+    \item \textbf{Pannelli e menù}: finestre che riportano dati circa l'esecuzione di applicazioni. 
+    \item \textbf{File manager}: navigazione tra cartelle e file. 
+    \item \textbf{Impostazioni di sistema}: dalla personalizzazione dell'aspetto fino alla determinazione del comportamento del sistema.
+\end{itemize}
+Nel mondo Linux esistono molti \tb{ambienti desktop diversi che, insieme al package manager, definiscono in gran parte una distribuzione}; Due ambienti desktop molto famosi e presenti in molte distribuzioni sono \ti{Gnome} e \ti{KDE}, la prima adotta la filosofia \ti{KISS} quindi applicazioni molto snelle e utilizza il \ti{toolkit GTK}, la seconda invece ha una prospettiva più orientata alla personalizzazione utente e il \ti{toolkit} utilizzato è \ti{Qt}, la differenza di \ti{toolkit} (e poi anche di altri aspetti però più secondari) può condizionare l'esperienza utente in modo abbastanza significativo se infatti l'utente utilizza applicazioni scritte con toolkit diverso da quello usato dall' ambiente desktop è necessario installare pacchetti aggiuntivi e, dal punto di vista della visualizzazione, si avverte una certa disuniformità con il resto del sistema.
+
+
+\section{Command Line, emulatore grafico di terminale e shell}
+\label{sec:Command-Line}
+Una caratteristica molto importante dell'ambiente desktop è sicuramente \tb{\ti{l'emulatore di terminale grafico}} e la \tb{\ti{shell}}, nel linguaggio comune si tende ad usare questi termini come fossero equivalenti, in realtà non è così. \tb{\ti{L'emulatore grafico di terminale} permette di avere un interfaccia grafica che solitamente consiste in una finestra all'interno della quale l'utente può scrivere righe di testo e dove il sistema reidirizza eventualmente output di tipo testuale}, è detto emulatore perchè praticamente \tb{emula la \ti{Command line} abbreviata con \ti{CLI}, questa si presenta sempre come una finestra ed ha le stesse identiche funzione di un emulatore grafico di terminale, l'unica differenza sta nel fatto che la CLI è molto più essenziale} e, anche per questo, meno personalizzabile e molto leggera, banalmente la CLI non permette neppure il copia e incolla del testo però il vantaggio è che \tb{risulta essere sempre accessibile dall'utente anche quando ad esempio la macchina si trova in particolari stati dove le risorse sono molto limitate tipo ripristino}. La \tb{\ti{shell} è un elemento essenziale, si tratta del programma che interpreta il testo scritto nella \ti{CLI} o nell' \ti{emulatore grafico di terminale} trasformando di fatto il testo in comandi} che il sistema sottostante esegue, esistono vari \tb{tipi di shell ma la più comune è \ti{Shell Bash}} che sarà considerata anche per i vari esempi che seguiranno. 
+
+\subsection{Interazioni base con il terminale}
+\label{subsec:Interazioni-base-con-il-terminale}
+Vediamo in questa parte alcune delle interazioni base tra sistema e utente attraverso il terminale (inteso come \ti{emulatore grafico di terminale}) o \ti{CLI}, ricordiamo che la shell usata è \ti{Shell Bash}. Appena si avvia il terminale si visualizza accanto al cursore che permette l'inserimento di testo una stringa di questo tipo: \sh{nome\_utente@nome\_host directory\_corrente tipo\_di\_shell} vediamo in dettaglio in cosa consistono i vari campi:
+\begin{itemize}
+    \item nome\_utente: il nome dell'\tb{utente che esegue shell}.
+    \item nome\_host: nome dell'host su cui viene eseguita la shell, \tb{l'host sarebbe la macchina su cui è installato il sistema}.
+    \item directory\_corrente: \tb{directory in cui si trova la shell durante l'esecuzione}, il simbolo \ti{$\sim$} è usato per indicare che \tb{la shell si trova nella directory home dell'utente corrente}.
+    \item tipo\_di\_shell: rappresenta con un simbolo \tb{se la shell è eseguita da un utente ordinario}, in tal caso il simbolo è \ti{\$}, oppure \ti{\#}, se \tb{eseguita dal superutente detto root}. 
+\end{itemize}
+In generale i comandi hanno una struttura di questo tipo: \sh{comando $[$opzione(i)...$]$ $[$argomento(i)...$]$}, dove ciò che è scritto fra parentesi quadre è facoltativo, vediamo meglio cosa richiedono questi campi:
+\begin{itemize}
+    \item nome\_comando: il nome del comando che vogliamo eseguire.
+    \item opzione(i)/parametro(i): è possibile che il comando \tb{supporti delle opzioni o che lavori con dei parametri}, questi aspetti dipendono molto dal tipo di comando che si considera, ogni comando può essere eseguito \tb{specificando un numero a piacere di opzioni e parametri}. Spesso un comando possiede \tb{opzioni che sono esprimibili con formato corto o con formato lungo}, a livello di esecuzione sono identiche la differenza sta solo nel modo in cui l'opzione va dichiarata nel comando, il formato corto è quello maggiormente usato e si differenzia dall'altro perchè l'opzione è preceduta dal carattere \ti{-} e rappresentata con una sola lettera, il formato lungo invece prevede il prefisso \ti{-}\ti{-} poi varie stringhe dichiarative.   
+    \item argomento(i): dati aggiuntivi richiesti dal comando, anche qui è possibile che ne siano richiesti più di uno.
+\end{itemize}
+La shell supporta due tipologie di comandi, 
+\begin{itemize}
+    \item \tb{Interni}: sono comandi che \tb{fanno parte della shell stessa e servono per svolgere attività all'interno della shell}, ne esistono circa 30 anche se questo numero può variare in base alla particolare shell considerata. \tb{In genere sono chiamati \ti{comandi shell builtin}}.
+    \item \tb{Esterni}: sono comandi \tb{ciascuno dei quali risiede in un singolo file, in genere sono programmi o script binari} e quando si scrive nel terminale il comando (che porta lo stesso nome del file che si vuole eseguire) \tb{la shell, non trovandolo tra i comandi interni, usa la variabile \ti{PATH} per cercare il file}, tale variabile verrà approfondita nel seguito, ma sostanzialmente è una variabile che contine indirizzi a directory dentro le quali la shell può cercare i comandi esterni. 
+\end{itemize}
+Il comando \sh{type <nome\_comando>} permette di capire se il comando inserito come argomento è interno o esterno, di seguito un esempio:
+\begin{cmdc}{\tc{type}}{type}
+	$ type echo
+	echo is a shell builtin
+	$ type man
+	man is /usr/bin/man
+\end{cmdc}
+
+il primo output indica che il comando \tc{echo} è interno, mentre il secondo output indica che il comando \tc{man} è esterno e viene indicato dove si trova.
+\tb{Il \ti{quoting} è una funzionalità che praticamente tutte le shell mettono a disposizione e consiste nell' utilizzo di caratteri particolari che fanno interpretare alla shell il testo scritto in determinati modi}, di seguito riporto 3 di questi caratteri:
+\begin{itemize}
+    \item Virgole doppie (""): il testo scritto tra virgole doppie è interpretato dalla shell in modo classico quindi i caratteri speciali come  il dollaro (\$), il backslash($\backslash$) e il backquote (`) mantengono le funzioni classiche, tuttavia il carattere spazio non viene più interpretato come sepatore di argomenti ma come carattere effettivo.
+    \item Virgole singole (''): il testo scritto tra virgole singole è interpretato dalla shell come testo puro quindi tutti i caratteri speciali non sono più interpretati come funzione ma solo come testo.
+    \item Backslash($\backslash$): i caratteri scritti di seguito al backslash fino ad un carattere spazio sono interpretati come caratteri testuali. 
+\end{itemize}
+L'argomento \ti{quoting} è di particolare importanza perchè tutto ciò che l'utente può fare per comumicare con il sistema è scrivere stringhe le quali vengono interpretate in un certo modo dalla shell, se l'interpretazione della stringa da parte della shell è diversa da quella che pensiamo otteniamo risultati anche molto diversi tra loro.
+
+\subsection{Le Variabili}
+\label{subsec:Le-Variabili}
+Dobbiamo ricordare che la shell consiste in un programma dunque quando \tb{avviamo un terminale o una CLI, implicitamente stiamo anche avviando la shell, in particolare stiamo aprendo una \ti{sessione shell}}, durante questa sessione è possibile definire delle variabili, il motivo per cui si dovrebbe fare una cosa del genere dipende molto da che tipo di operazioni vogliamo svolgere sul sistema, ad esempio se si volgiono creare 10 file con nomi diversi potrebbe essere utile dichiarare una variabile contatore che poi dinamicamente viene decrementata, oppure una variabile che racchiude un informazione del sistema che poi viene utilizzata per formattare stringhe e tante altre applicazioni diverse. Si possono definire durante la sessione due tipo di variabili:
+\begin{itemize}
+    \item \tb{Variabili locali}: sono varaibili \tb{interne alla particolare sessione di shell, sono disponibili solo alla shell stessa e non sono utilizzabili da sottoprocessi} ovvero da processi esterni alla shell (anche quelli avviati da essa). Una variabile locale si può creare nel seguente modo \sh{<nome\_variabile>=<valore\_variabile>}, è importante che non siano presenti spazi nel nome, nel valore e tra il simbolo di assegnamento (=), per visualizzare sulla shell il valore della variabile si scrive il comando \tc{echo \$<nome\_variabile>}, dove il carattere \ti{\$} serve per accedere al valore della variabile avente nome scritto subito dopo, per rimuovere una variabile locale si scrive \tc{unset <nome\_variabile>}, di seguito riporto un esempio molto semplice dei comandi sopra scritti:
+    \begin{cmdc}{Esempio variabili locali, \tc{unset}}{Esempio-variabili-locali-unset}
+	$ luce=on
+	$ echo $luce
+	on
+	$ luce=off
+	$ echo $luce
+	off
+	$ unset luce
+	$ echo $luce
+    \end{cmdc}
+    \item \tb{Variabili di ambiente}: sono variabili che \tb{risultano essere visibili a tutti i sottoprocessi avviati dalla sessione shell oltre che alla shell stessa}, sono molto usate per passare informazioni sul sistema ai comandi esterni che si vogliono eseguire. Molto spesso le variabili di ambiente vengono dichiarate con un nome scritto con lettere maiuscole e \tb{l'insieme completo di tutte viene chiamato \ti{ambiente}}. Le variabili ambientali \tb{si creano usando \ti{export}}, le regole per la visualizzazione e distruzione sono identiche a quelle viste per le variabili locali, è possibile ottenere una lista delle variabili di ambiente create dalla particolare shell usando il comando \tc{env}. È possibile creare una variabile di ambiente a partire da una locale di seguito un esempio molto semplice:
+    \begin{cmdc}{\tc{export} e \tc{env}}{export-e-env}
+	$ export giorno=on
+	$ echo $giorno
+	on
+	$ unset giorno
+	$ echo $luce
+	$ macchina=rossa
+	$ export macchina
+    \end{cmdc}
+    
+\end{itemize}
+\tb{Le variabili non sono permanenti nel sistema ma restano fin tanto che non viene chiusa la sessione di shell dentro la quale sono state dichiarate, alla chiusura le variabili vengono distrutte}, questo può rappresentare \tb{un problema soprattutto per le variabili ambientali che sostanzialmente assumono sempre lo stesso valore}, per questo molte shell mettono a disposizione \tb{un file di configurazione dentro al quale vanno dichiarate queste variabili}, in questo modo quando la shell viene avviata questa dichiara automaticamente tutte queste variabili.  
+Tra tutte le variabili di ambiente una delle più importanti è la \tb{variabile PATH}, questa variabile ha come valore \tb{un elenco di percorsi a directory separati dal carattere : e le directory puntate sono quelle che la shell consulta quando viene richiesta l'esecuzione di un programma invocabile come comando esterno}. Modificare la variabile PATH richiede particolare attenzione e generalmente la modifica consiste nella rimozione o aggiunta di un percorso, di seguito è riportato un esempio:
+\begin{cmdc}{Variabile \tc{PATH}}{Variabile-PATH}
+	$ echo $PATH
+	/home/user/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+	$ PATH=$PATH:/usr/games
+	$ echo $PATH
+	/home/user/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/urs/bin
+	$ PATH=/home/user/bin
+	$ echo $PATH
+	/home/user/bin
+\end{cmdc}
+
+Una piccola nota riguarda l'ordine con cui sono scritti i percorsi della variabile PATH, questi infatti coincidono anche con l'ordine con cui la shell effettua la ricerca.
+Il comando \tc{which} permette di individuare il percorso che la shell segue quando viene invocato il programma attraverso comando, la sintassi è del tipo: \sh{which <nome\_comando>}.
+
+% manca la parte degli help e delle pagine man ecc, tutto si trova da pagina 99 fino a 102
+
+\section{Navigazione nel file system}
+\label{sec:Navigazione-nel-file-system}
+Un aspetto basilare per l'utilizzo di una qualsiasi distribuzione Linux è saper navigare all'interno del file system utilizzando riga di comando. Iniziamo con qualche nozione teorica fondamentale, nei sistemi Linux è abbastanza importante \tb{non utilizzare caratteri speciali (spazio, virgola, slash, asterischi, cancelletto, questi elencati sono i più comuni ma per essere precisi bisognerebbe controllare quali caratteri la shell interpreta come speciali) nei nomi assegnati ai file e directory}, questo perchè altrimenti la ricerca di essi potrebbe tradursi nella scrittura di un comando più complicato in quanto i caratteri speciali presenti nel nome sono interpretabili dalla shell, in linea di massima \tb{la regola generale è usare solo lettere e numeri}. I nomi dei file spesso possiedono un suffisso finale che inizia sempre con il carattere punto, in Windows questo è chiamato estensione, \tb{tale suffisso aiuta l'utente a ricordare che tipo di dati sono presenti nel file ma non ha alcun significato per il sistema} che infatti esegue il file comunque essendo il nome di esso solo un identificativo che non può definire quanto scritto al suo interno. Vediamo ora il \tb{comando che permette di spostarsi tra le cartelle modificando la directory di lavoro corrente della shell, ovvero: \sh{cd <percorso\_directory\_o\_file>}, il percorso al file o directory può essere assoluto o relativo}:
+\begin{itemize}
+    \item Percorso \tb{assoluto}: prevede che si vadano a \tb{specificare tutte le sottodirectory da "attraversare" per arrivare al file o directory desiderata a partire dalla directory root indicata con il carattere $\backslash$}.
+    \item Percorso \tb{relativo}: prevede che si vada ad \tb{illustrare il percorso al file o directory desiderata rispetto all'attuale directory di lavoro in cui si trova la shell} (tale directory sarebbe quella che l'utente visualizza accanto al cursore che permette di scrivere testo nel terminale o nella CLI, negli esempi riportati in questo file solitamente viene scritto solo \$ non dando particolare importanza a quanto scritto prima ovvero nome utente, nome host e directory di lavoro, \tb{ricorda che il carattere $\thicksim$ rappresenta la directory utente il cui percorso assoluto è /home/user}). Nell'espressione dei percorsi relativi tornano molto utili i caratteri \tb{. e .. , il primo serve per specificare che il percorso parte dalla directory corrente di lavoro mentre il secondo permette di spostarsi nella directory padre rispetto a quella corrente} (in pratica permette di scalare di una directory). 
+\end{itemize}
+I percorsi relativi sono molto comodi per navigare velocemente in directory vicine mentre quelli assoluti sono utili per compiere spostamenti tra directory più distanti. Di seguito si riportano degli esempi semplici che mostrano i vari modi per raggiungere la directory \tc{report} considerando una struttura del tipo: \tc{/home/user/Documenti/test/report/immagini}, notare che inoltre in questi esempi si riporta anche la parte a sinistra del carattere \$ in quanto è rilevante in questo caso.
+\begin{cmd}
+	user@hostname ~ $ cd ./Documenti/test/report 
+\end{cmd}
+ 
+\begin{cmd}
+	user@hostname ~ $ cd /home/user/Documenti/test/report 
+\end{cmd}
+ 
+\begin{cmd}
+	user@hostname ~/Documenti $ cd ./test/report 
+\end{cmd}
+
+\begin{cmd}
+	user@hostname ~/Documenti/test/report/immagini $ cd .. 
+\end{cmd} 
+
+Il comando \tb{\tc{cd}, se eseguito senza percorso sposta la directory di lavoro a quella utente} (indicata con $\thicksim$). \tb{Il comando \tc{pwd} permette di ottenere il percorso assoluto della directory di lavoro}, ad esempio:
+\begin{cmdc}{\tc{cd} e \tc{pwd}}{cd-e-pwd}
+	user@hostname ~/Documenti/test/report $ pwd
+	/home/user/Documenti/test/report
+\end{cmdc}
+
+\subsection{Ricerca di un file nel File system}
+\label{subsec: Ricerca-di-un-file-nel-File-system}
+Un altro aspetto fondamentale nella navigazione nel file system è la ricerca di file e directory, \tb{Il comando \tc{tree} mostra l'organizzazione della directory di lavoro, l'output è una rappresentazione grafica}, è possibile che l'applicazione non sia presente di default nel sistema quindi nel caso è necessario installarla. \tb{Il comando \sh{ls <flag>} serve per ottenere un elenco dei file e directory contenuti nella directory di lavoro, l'output è un elenco}. Tale comando è molto utilizzato ed è importante conoscerlo bene, per approfondimenti si rimanda alla sezione apposita, i flag disponibili sono molti ma sicuramente i più impostanti sono: \tb{\ti{-l}} mostra il contenuto della directory in formato dettagliato, \tb{\ti{-a}} mostra anche i file nascosti, \tb{\ti{-t}} mostra file e directory in ordine crescente per data di modifica.
+
+Per \tb{trovare un file o directory specifica esistono comandi appositi} di seguito si parlerà dei più comuni e efficienti. Iniziamo con il comando \sh{locate <nome\_programma>}, tale comando \tb{avvia un programma che cerca all'interno di un database e restituisce tutti i nomi dei file presenti che possiedono la stringa specificata}, notare che vengono restituiti anche i file che contengono il nome specificato come sottostringa, quest'utimo comportamento del comando è modificabile consultando la documentazione dello stesso. Lo stesso comando \tb{supporta espressioni regolari} per la ricerca, questo aspetto è particolarmente utile e permette di rendere la ricerca molto più mirata. Essendo che il comando consulta un database per effettuare la ricerca \tb{è posibile che non venga trovato un file recentemente aggiunto se il database non è aggiornato}, \tb{l'aggiornamento di questo avviene attraverso il programma \tc{updatedb} il quale viene eseguito periodicamente dal sistema}, qualora si volesse forzare l'esecuzione e quindi l'aggiornamento è \tb{necessario essere superutente}.
+L'altro comando utilizzabile per ricercare file usa un approccio ricorsivo, la sintassi è del tipo \sh{find <path\_start> <filtro> <espressione>}, \tb{il path\_start specifica il punto rispetto al quale inizia la ricerca da parte del programma, il filtro serve per scegliere che tipo di caratteristica si vuole ricercare per i file, ad esempio \tc{-name} serve per cercare un file per nome e il campo espresione contiene il valore da ricercare}; Anche questo comando \tb{supporta espressioni regolari} quindi riconosce l'utilizzo di caratteri jolly.
+
+\subsection{Creazione, Spostamento ed Eliminazione di File}
+\label{subsec:Creazione-Spostamento-ed-Eliminazione-di-File}
+In Linux \tb{la shell è molto usata anche per la gestione dei fil}e, tra l'atro questo strumento in molti casi si rivela ben più utile e efficiente rispetto ad un file manager grafico, vediamo quali sono i comandi fondamentali da usare per compiere le operazioni basilari che si compiono normalmente. Per \tb{creare una directory, che praticamente è un particolare tipo di file, si usa il comando \sh{mkdir <flag> <nome\_directory>}}, il particolare \tb{il comando può creare anche più directory, basta dividere il nome di esse con il carattere spazio, se non si usa il flag \tc{-p} le eventuali sottodirectory che si vogliono creare richiedono che la directory padre esista già o che comunque sia stata creata prima}. Una piccola nota riguarda il nome delle directory che \tb{Linux distingue anche se queste hanno stesso nome ma scritto con caratteri diversi (minuscolo e maiuscolo)} a differenza di Windows che invece non fa questa distinzione per le directory. Di seguito è riportato un esempio molto semplice sull'utilizzo del comando \tc{mkdir}.
+\begin{cmdc}{\tc{mkdir}}{mkdir}
+	$ pwd
+	/home/snake
+	$ ls
+	documenti
+	$ mkdir musica musica/preferiti musica/nuovi giochi
+	$ ls
+	documenti musica giochi
+	$ ls musica
+	preferiti nuovi
+\end{cmdc}
+
+Per la \tb{creazione di un file esistono molti comandi diversi, questo perchè ovviamente dipende anche da quello che vogliamo scriverci dentro}, uno dei più semplici \tb{è il comando \sh{touch <flag> <nome\_file>} che, se usato senza flag, crea il file oppure, se già presente, ne aggiorna la data di modifica e accesso}. Una volta creato il file, per \tb{modificarlo esistono vari modi, uno semplice che permette di scrivere testo nel file è quello di usare i caratteri speciali > e > > in combinazione al comando \sh{echo <flag> <stringa>}}, in pratica il comando \tc{echo} permette di scrivere sul termianle del testo mentre i caratteri > e > > consentono di reindirizzare l'output dei comandi (quindi anche il comando \tc{echo}) in un file, \tb{in particolare il carattere > > aggiunge l'output in fondo al file mentre > lo sovrascrive}. In realtà l'utilizzo di \tc{echo} e dei caratteri speciali > e > > \tb{è utile non solo per inserire testo ad un file esistente ma anche per crearlo direttamente con dentro il testo specificato}. \tb{Per visualizzare il contenuto di un file come testo nel terminale} si usa il comando \sh{cat <flag> <percorso\_file>}, negli utilizzi più semplici non servono opzioni da specificare. Di seguito è riportato un esempio sull'utilizzo dei comandi sopra spiegati.
+\begin{cmdc}{\tc{cat}}{cat}
+	$ pwd
+	/home/snake/documenti
+	$ ls
+	$ touch lista-spesa appunti
+	$ ls
+	lista-spesa appunti
+	$ echo patate > lista-spesa
+	$ cat lista-spesa
+	patate
+	$ echo pomodori >> lista-spesa
+	$ cat lista-spesa
+	patate
+	pomodori
+	$ echo farina > lista-spesa
+	$ cat lista-spesa
+	farina
+	$ ls
+	lista-spesa appunti
+	$ echo devo andare dal medico domani alle 14:00 > note
+	$ ls
+	lista-spesa appunti note
+	$ cat note
+	devo andare dal medico domani alle 14:00
+\end{cmdc}
+
+L'operazione di \tb{rinominazione e spostamento di file si può compiere usando il comando\\ \sh{mv <flag> <percorso\_file\_origine> <percorso\_file\_finale>}}, \tb{il comando sposta un il/i file specificati nel primo argomento nel file directory specificato come secondo argomento} (che si sottolinea che deve essere unico, cioè il comando non accetta più di una destinazione), \tb{questo funzionamento può essere sfruttato per rinominare i file} (intese sia directory che tutti gli altri tipi) in quanto \tb{basta che i percorsi ai due file coincidano tranne ovviamente per il nome}, per quest'ultimo utizzo \tb{bisogna fare attenzione che il nuovo nome assegnato al file non sia già usato da un altro, in tal caso si verifica la sovrascrittura del file già esistente con quello rinominato}. Il comando \tc{mv} accetta anche i seguenti flag:
+\begin{itemize}
+    \item -i: interattivo, se il file di destinazione usa lo stesso nome di un file già esistente chiede conferma prima di sovrascrivere.
+    \item -f: forza, stessa condizione descritta per il flag -i però non chiede conferma ma esegue direttamente la sovrascrizione, è il comportamento di default.
+    \item -u: muove solo se il file di origine è più recente rispetto al file di destinazione o se il file di destinazione non esiste.
+    \item -v: verboso, mostra un messaggio per ogni file spostato o rinominato.
+\end{itemize}
+Di seguito è riportato un esempio (ricordare che l'organizzazione delle directory è stata definita nell'esempio sopra), il primo \tc{mv} sposta 2 file da una directory ad un'altra, il secondo è usato per rinominare un file e il terzo per rinominare una directory
+\begin{cmdc}{\tc{mv}}{mv}
+	$ pwd
+	/home/snake/documenti
+	$ ls
+	lista-spesa appunti
+	$ echo esercizio sulle derivate > esercizio1
+	$ ls
+	lista-spesa appunti esercizio1
+	$ mv -v esercizio1 appunti ../giochi
+	'esercizio1' -> '../giochi/esercizio1'
+	'appunti' -> '../giochi/appunti'
+	$ ls
+	lista-spesa
+	$ mv lista-spesa lista
+	$ ls
+	lista
+	$ mv ../giochi ../scuola
+	$ ls ..
+	scuola ducumenti musica
+\end{cmdc}
+
+Per eliminare generici file si usa il comando \sh{rm <flag> <percorso\_al\_file>}, i flag per questo comando sono di particolare importanza:
+\begin{itemize}
+    \item -r: ricorsiva, questo flag permette di eliminare tutti i file e tutte le sottodirectory che si trovano nella directory passata per argomento (anche quest'ultima viene rimossa).
+    \item -i: interattivo, se usato chiede conferma ogni volta che viene rimosso un file.
+    \item -f: non interattivo, è il comportamento standard.
+\end{itemize}
+Quando \tb{il comando è usato senza il flag \tc{-r} è possibile eliminare solo file diversi da directory e inoltre è possibile anche passare più di un file}. Se viene usato il comando \tb{con il flag \tc{-r} la portata di esso è molto più ampia e quindi solitamente bisogna fare attenzione nel suo utilizzo, infatti con il flag attivo vengono rimossi tutti i file presenti nella directory e anche nelle sottodirectory (se presenti), oltre poi alla stessa directory passata come argomento}, solitamente per una questione di sicurezza nella procedura di eliminazione il flag \tc{-r} è affiancato al flag \tc{-i}. Esiste poi un \tb{comando appositamente utilizzabile per eliminare directory vuote ovvero \sh{rmdir <percorso\_alla\_cartella>}, è possibile passare anche più di una directory}. Di seguito il solito esercizio che illustra i vari utilizzi, nel primo si mostra come si eliminano più  file non directory, nel secondo come si elimina una directory con dentro file e sottodirectory e nel terzo come si eliminano directory vuote, prima dell'esercizio viene mostarto l'albero della directory \tc{user} (figura \ref{fig:Struttura-interna-della-directory-user}).
+\begin{figtree}{Struttura interna della directory \tc{user}}{Struttura-interna-della-directory-user}
+	\dirtree{%
+		.1 user.
+		.2 documenti.
+		.3 fileZ1.
+		.2 musica.
+		.3 fileA1.
+		.3 fileA2.
+		.3 fileA3.
+		.3 nuovi.
+		.4 fileB1.
+		.4 fileB2.
+		.3 preferiti.
+		.4 fileC1.
+		.4 fileC2.
+		.2 scuola.
+	}
+\end{figtree}
+
+Passiamo all'esercizio effettivo:
+\begin{cmdc}{\tc{rm}}{rm}
+	$ pwd
+	/home/user
+	$ ls
+	documenti musica scuola
+	$ cd musica
+	$ rm fileA1 fileA2 fileA3 ./preferiti/fileC1 ./preferiti/fileC2 ../documenti/fileZ1
+	$ ls . ./preferiti ../documenti
+	.:
+	nuovi preferiti
+	./preferiti:
+	
+	../documenti:
+	$ rm -ir ./nuovi
+	rm: descend into directory './nuovi'? Y
+	rm: remove './nuovi/fileB1'? Y
+	rm: remove './nuovi/fileB2'? Y
+	rm: remove directory './nuovi'? Y
+	$ ls
+	preferiti
+	$ rmdir ../documenti ./preferiti ../scuola
+	$ cd ..
+	$ ls
+	musica
+\end{cmdc}
+
+Infine vediamo \tb{come si effettua la copia di un file}, si utilizza il comando \\\sh{cp <flag> <percorso\_file\_origine> <percorso\_file\_destinazione>}, quando si \tb{omette il flag il comando copia i file passati per argomento nella directory di destinazione scritta come secondo argomento}. Quando si ha la necessità di \tb{copiare una directory in un'altra è necessario usare il flag \tc{-r} (unico flag disponibile per questo comando) che funziona con l'approccio ricorsivo solito}, in quest'ultimo utilizo \tb{se la directory di destinazione non esiste allora questa viene creata e poi riempita con i file presenti nella cartella sorgente}, se invece la \tb{cartella esiste allora viene creata in essa una directory che porta lo stesso nome della directory sorgente oltre poi a tutti i file in essa}. Un caso particolare di utilizzo del comando è quando viene dato come percorso al file sorgente un file già esistente, quello che accade è che il file già esistente viene sovrascritto. Sotto riporto i classici esempi, nel primo utilizzo il comando copia più file in una directory, nel secondo si effettua una copia di una directory in un'altra già esistente e nel terzo si copia una directory in un'altra non esistente nel sistema, anche qui si parte dalla struttura di base riportata in \ref{fig:Struttura-interna-della-directory-user}:
+\begin{cmdc}{\tc{cp}}{cp}
+	$ cd ./musica
+	$ cp fileA1 fileA2 preferiti
+	$ ls . ./preferiti
+	.:
+	fileA1     fileA2     fileA3     nuovi      preferiti
+	./preferiti:
+	fileA1  fileA2  fileC1  fileC2
+	$ cp -r ./preferiti ../scuola
+	$ ls ../scuola ../scuola/preferiti
+	../scuola:
+	preferiti
+	../scuola/preferiti:
+	fileA1  fileA2  fileC1  fileC2
+	$ cp -r nuovi ../varie
+	$ ls nuovi ../varie
+	../varie:
+	fileB1  fileB2
+	nuovi:
+	fileB1  fileB2
+\end{cmdc}
+
+\subsection{Il Globbing}
+\label{subsec:Il-Globbing}
+Molto spesso riferirsi ad un file di sistema specificandone il nome esatto è abbastanza scomodo perchè richiede di ricordare non solo il nome del file ma anche il nome di tutte le sottodirectory che lo contengono, in pratica il percorso al file, \tb{il globbing è un linguaggio riconosciuto dalla shell che permette a l'utente di riferirsi a gruppi generecici di file, per fare ciò viene usata una scrittura che permette all'utente di definire un pattern il quale viene utilizzato dalla shell per selezionare i file di interesse}. I simboli usati per definire i pattern dipendono dalla shell utilizzata tuttavia lo \ti{standard POSIX.1-2017 } che viene seguito dalla gran parte delle shell fissa i seguenti:
+\begin{itemize}
+    \item \tb{*}: corrisponde a qualsiasi numero e tipo di carattere.
+    \item \tb{?}: corrisponde a un carattere di qualsiasi tipo.
+    \item \tb{[]}: corrisponde ad una classe di caratteri. Qualche esempio di intervallo definibile:
+    \begin{itemize}
+        \item \verb|[ahz]|: solo i caratteri a, h e z.
+        \item \verb|[a-c]|: solo i caratteri compresi tra a e c.
+        \item \verb|[^a-c]|: qualsiasi carattere tranne quelli compresi tra a e c. \tb{Il carattere \ti{\^} è interpretato nell' intervallo come negazione di quanto segue}.
+        \item \verb|[1-3a-c]|: solo i caratteri compresi tra 1 e 3 e compresi tra a e c.
+        \item \verb|[1-45-9]|: solo i caratteri compresi tra 1 e 4 e quelli compresi tra 5 e 9. In particolare questo esempio permette di far notare un aspetto importante ovvero che, \tb{quando si usa il carattere \ti{-} per definire un range, la shell prende come limiti i singoli carateri che si trovano a destra e sinistra di \ti{-}}.
+    \end{itemize}
+    Gli esempi di intervalli sopra riportati richiedono di specificare a mano ogni volta il range di caratteri, un modo \tb{avanzato per fare ciò evitando di scrivere i caratteri in particolare è usare le classi di caratteri, ne esistono di vari tipi e possono essere utilizzate per scrivere intervalli in maniera sintetica}.
+\end{itemize}
+Quando vengono usati i caratteri globbing \tb{la shell prima risolve questi e poi esegue il comando}, questo comportamento va tenuto in considerazione perchè alcuni comandi potrebbero presentare un comporatmento leggermente diverso da quello che ci si aspetterebbe, ad esempio \tb{il comando \tc{ls} che quando l'argomento contiene caratteri globbing mostra in output i file che corrispondono al pattern definito}. Come al solito riporto qualche esempio appena sotto.
+\begin{cmdc}{Shell globbing}{Shell-globbing}
+	$ ls
+	file12ac  file2v00  file2v02  file99jh  fileX100  filef32  fileZAac
+	$ ls file2???
+	file2v00  file2v02
+	$ ls fileX*
+	fileX100
+	$ls file[1-2]v0*
+	file2v00  file2v02
+	$ ls file[Y-Z]*
+	fileZAac
+	$ ls file[3-9A-Za-z]*
+	file99jh  fileX100  fileZAac  filef32
+\end{cmdc}
+
+\subsection{Ricerca di dati in un file}
+\label{subsec:Ricerca-di-dati-in-un-file}
+Avendo dei file è fondamentale \tb{riuscire a individuarli effetuando ricerche basate sul contenuto di essi}, per fare ciò si usa il comando \\\sh{grep <flag> <pattern> <percorso\_start\_directory>}, in pratica il programma permette di \tb{cercare nei file contenuti nella directory passata (in realtà funziona anche se vengono passati singoli file, basta elencarli, tuttavia l'uso comune è su directory) le stringhe corrispondenti al pattern specificato, l'output consiste nel mostrare la riga dei file che contengono il dato in particolare che rispetta il pattern definito}, il comando supporta molti flag, i più comuni sono riportati di seguito:
+\begin{itemize}
+    \item \tc{\tb{-i}}: la ricerca non fa distinzione tra lettere minuscole e maiuscole.
+    \item \tc{\tb{-r}}: la ricerca è ricorsiva, in pratica si applica anche al contenuto di file contenuti in sottodirectory.
+    \item \tc{\tb{-c}}: la ricerca conta il numero di corrispondenze trovate.
+    \item \tc{\tb{-v}}: inverte la ricerca, restituisce le righe che non hanno corrispondenza con i termini di ricerca.
+    \item \tc{\tb{-E}}: attiva le espressioni regolari estese necessarie per scrivere pattern avanzati che usano i simbli \tc{|, +, ?}.
+\end{itemize}  
+Per definire i pattern di ricerca il comando prevede specifici simboli da usare:
+\begin{itemize}
+    \item \verb|^|: quanto segue deve essere presente all'inizio della riga.
+    \item \verb|$|: quanto segue deve essere presente alla fine della riga.
+    \item \verb|.|: una sola occorenza di qualsiasi carattere.
+    \item \verb|*|: zero o più occorenze del carattere precedente.
+    \item \verb|[ ]|: classe di caratteri accettati, è possibile esprimere intervalli di caratteri usando il simbolo \ti{-}.
+    \item \verb|[^ ]|: negazione della classe di caratteri, sono accettati tutti quelli non presenti nell'elenco scritto.
+    \item \verb|+|: Una o più occorrenze del carattere precedente, tale simbolo è interpretabile solo se il comando ha il flag \ti{-E}.
+    \item \verb|?|: Zero o una sola occorrenza del carattere precedente, tale simbolo è interpretabile solo se il comando ha il flag \ti{-E}.
+    \item \verb|||: OR logico, tale simbolo è interpretabile solo se il comando ha il flag \ti{-E}.
+\end{itemize}
+Come si può vedere \tb{il pattern utilizza caratteri speciali che la stessa shell potrebbe interpretare, per impedire ciò è buona norma scrivere sempre il pattern tra doppie virgolette ("")}. Di seguito si riportano vari esempi di utilizzo, questa volta il punto di partenza dell'esercizio è dato dal listing \ref{lst:Contenuto-dei-file-presenti-nella-directory-doc}
+\begin{cmdc}{Contenuto dei file presenti nella directory \tc{doc}}{Contenuto-dei-file-presenti-nella-directory-doc}
+	$ cat file1
+	apple banana cherry
+	42 is the answer
+	grep is powerful
+	hello world 123
+	$ cat file2
+	john.doe@example.com
+	jane_smith1990@test.org
+	2024-03-03
+	03/03/202
+	$ cat file3
+	[ERROR] Failed to load module
+	[INFO] User logged in
+	[WARNING] Low disk space
+	[ERROR] Connection timeout
+\end{cmdc}
+
+Ecco i vari esempi:
+\begin{cmdc}{\tc{grep}}{grep}
+	$ grep "le" ./doc/*
+	./doc/file1:apple banana cherry
+	./doc/file2:john.doe@example.com
+	./doc/file3:[ERROR] Failed to load module
+	$ grep "le$" ./doc/*
+	./doc/file3:[ERROR] Failed to load module
+	$ grep "le " ./doc/*
+	./doc/file1:apple banana cherry
+	$ grep -E "apple|world" ./doc/*
+	./doc/file1:apple banana cherry
+	./doc/file1:hello world 123
+	$ grep "^U" ./doc/*
+	$ grep ".*@.*" ./doc/*
+	./doc/file2:john.doe@example.com
+	./doc/file2:jane_smith1990@test.org
+	$ grep ".*@.*\.com" ./doc/*
+	./doc/file2:john.doe@example.com
+	$ grep "^\[.*\]" ./doc/*
+	./doc/file3:[ERROR] Failed to load module
+	./doc/file3:[INFO] User logged in
+	./doc/file3:[WARNING] Low disk space
+	./doc/file3:[ERROR] Connection timeout
+	$ grep -E "2[0-9]?" ./doc/*
+	./doc/file1:42 is the answer
+	./doc/file1:hello world 123
+	./doc/file2:2024-03-03
+	./doc/file2:03/03/2024
+	$ grep -E "2[0-9]+" ./doc/*
+	./doc/file1:hello world 123
+	./doc/file2:2024-03-03
+	./doc/file2:03/03/2024
+\end{cmdc}
+
+
+% \section{Shell scripting}
+% \label{sec:Shell-scripting}
+% I comandi \tb{eseguibili da shell possono essere scritti in un file, in questo modo l'utente può evitare di scrivere noiose procedure CLI in quanto è sufficiente far eseguire il file alla shell}. Quando si decide di scrivere un file che poi si ha intenzione di eseguire è necessario \tb{specificare al sistema il tipo di interprete da usare per interpretare in istruzioni il testo scritto nel file}, per fare questa oprazione \tb{si formatta l'inizio del file in questo modo\sh{\#!percorso\_assoluto\_interprete}, tale riga è detta \ti{shell bang}, nel caso particolare di shell scripting l'interprete da inserire è quello della particolare shell in utilizzo (per ottenere la sua posizione nel sistema si può scrivere \sh{which bash})}. Scritta la shell bang il resto da scrivere nel file dipende dal tipo di operazioni da compiere, ultimata questa parte il file va salvato nel sistema con un certo nome. \tb{Per eseguire un file script torna utile ricordare il significato della variabile PATH (approfondita in \ref{subsec:Le-Variabili}), infatti scrivendo direttamente il nome del file nella CLI si ottiene un errore se il percorso al file non è stato inserito nella variabile PATH}, se viene scritto nella CLI il percorso assoluto o relativo (rispetto alla directory di lavoro) al file questo viene eseguito tuttavia è ovvio che queste ultime due siano soluzioni da usare solo per testare lo script e non come definitive. È possibile che la creazione del file abbia di \tb{default i permessi di esecuzione negati, per scoprire ciò si usa il comando \sh{ls} con il flag \ti{-l} così che siano visibili anche i vari permessi concessi a proprietario gruppo e altri utenti sul particolare file, se non è presente il carattere \ti{x} per nessuna classe utente allora significa che nessuno può eseguire il file}, è \tb{necessario concedere l'autorizzazione usando il comando \sh{chmod} che usato nel seguente modo: \sh{chmod +x file\_script} concede il privilgio di esecuzione del file a tutte le classi}. Essendo uno script è molto probabile che si dovranno usare variabili ambientali o locali, la modalità con cui fare ciò è riportata nella sezione \ref{subsec:Le-Variabili}
+
+
+
+\section{Compressione e Archiviazione dei file}
+\label{sec:Compressione-e-Archiviazione-dei-file}
+Solitamente \tb{compressione e archiviazione vanno di pari passo tuttavia nei sistemi Linux non è detto che debba essere così e infatti le varie distribuzioni mettono a disposizione strumenti appositi per la compressione e strumenti appositi per l'archiviazione}. Prima di vedere gli strumenti preosti alla compressione e archiviazione è bene ricordare che cosa si intende per compressione e archiviazione. La \tb{compressione consiste in una operazione che permette di rendere più compatto un file in termini di occupazione di memoria non rinunciando però al contenuto informativo dello stesso}, questa oprazione è possibile grazie all'utilizzo di particolari algoritmi che ricercano nel file originale pattern complessi che possono essere memorizzati in modo compatto e che permettono di ricostruire il contenuto informativo del file iniziale, bisogna aggiungere anche che \tb{esistono algoritmi di compressione senza perdita, detti \ti{lossless}, che praticamente nel comprimere il file fanno attenzione a non perdere nessun dato del file originale, e algoritmi di compressione con perdita, \ti{detti lossy}, questi algoritmi nel comprimere il file, al fine di ottenere una riduzione ancora più significativa in termini di occupazione in memoria del file, tolgono dati "secondari"} (esempio tipico sono gli algoritmi di compressione per immagini che per diminuire il peso del file rimuovono i dati associati ad alcune sfumature che l'occhio umano non riesce a percepire oppure anche i metadati come luogo proprietario dell'immagine e tanti altri quindi, anche se praticamente si perdono dati, andando a decomprimere il file comunque la loro mancanza è impercettibile e quindi si dice che il contenuto informativo è preservato). Per quanto riguarda \tb{l'archiviazione, questa operazione consiste nel raccogliere in modo ordinato più file (directory comprese) in un unico file generale}, questo processo non richiede necessariamente che i file al suo interno debbano essere compressi, la differenza rispetto ad una semplice directory è che \tb{l'archivio è un file contenente i dati ordinati estratti dai file usati per la sua costruzione, tutti questi dati si trovano praticamente in un unico file e questo aspetto è particolarmente comodo quando si vuole preservare l'ordine e la natura dei dati}, ad esempio quando si devono spostare grandi quantità di file.  
+
+\subsection{Strumenti per la compressione di file}
+\label{subsec:Strumenti-per-la-compressione-di-file}
+I programmi di compressione si distinguono per il \tb{tipo di algoritmo usato per comprimere i file e la bontà della compressione intesa come diminuzione delle dimensioni del file}, dipende principalmente dal tipo di dati presenti nel file e dalla velocità con cui si vuole effetuare l'operazione di compressione, infatti in molte distribuzioni Linux sono presenti più programmi per svolgere tale operazione, di seguito sono riportati i più comuni:
+\begin{itemize}
+    \item \tc{\tb{gzip}}: usa algoritmo lossless, molto rapido con un rapporto di compressione basso, solitamente tra 60-70\%, è utilizzato per comprimere file di log o dati temporanei. 
+    \item \tc{\tb{bzip2}}: usa algoritmo lossless, medio-lento ma con un rapporto di compressione buono 70-80\%, è usato per archiviare generici file il cui accesso non deve avvenire in modo consueto. 
+    \item \tc{\tb{xz}}: usa algoritmo lossless, lento ma permette di ottenere compressione massima che solitamente consiste in un rapporto di compressione tra 80-90\%, è impiegato per comprimere grandi archivi o anche intere distribuzioni.
+\end{itemize}
+Ciascun programma è invocabile da CLI attraverso apposito comando, ciascun comando ha struttura identica del tipo \sh{<nome\_programma> <flag> <percorso\_file\_da\_comprimere>}, ogni comando ha un suo set di flag riconosciuti di seguito vengono riportati quelli comuni a tutti che sono poi anche i più frequentemente utilizzati
+\begin{itemize}
+    \item \tc{-d}: per indicare la decompressione, quindi il file passato deve essere decompresso.
+    \item \tc{-k}: il comando esegue compressione sul file passato ma ne lascia una copia.
+    \item \tc{-[1-9]}: indica il livello di compressione da applicare al file, 1 è il minimo quindi poca compressione ma rapida, 9 è il massimo quindi massima compressione però anche maggiore tempo per effettuarla.
+\end{itemize}
+Per tutti i programmi vale che il \tb{file prodotto dalla compressione ha un nome formato dal nome originale del file più un suffisso particolare che ogni programma applica, ad esempio \tc{gzip} applica \tc{.gz}, \tc{bzip2} applica \tc{.bz2} e \tc{xz} applica \tc{.xz}}, tale funzionamento è molto \tb{importante per l'utente che può decomprimere il file sono ricordando con quale programma questo è stato compresso}. Un file compresso resta ancora \tb{parzialmente consultabile, soprattuto da parte dell'utente, spesso infatti i programmi di compressione mettono a disposizione delle versioni speciali degli strumenti più comuni utilizzati per leggere i file di testo}, per esempio \tc{gzip} ha una versione di \tc{cat, grep, diff, less, more} e alcuni altri e questi comandi sono semplicemente preceduti dal carattere \tc{z}, per \tc{bzip2} il prefisso è \tc{bz} e per \tc{xz} il prefisso è \tc{xz}. Di seguito si riporta un esempio di utilizzo.
+\begin{cmdc}{\tc{gzip}, \tc{zcat}, \tc{bzip2}, \tc{xz}}{gzip-zcat-bzip2-xz}
+	$ ls
+	file1 file2 file3 file4 file5
+	$ gzip file1 file2
+	$ bzip2 -5 file3
+	$ xz -1k file4 file5
+	$ ls
+	file1.gz file2.gz file3.bz2 file4.xz file5.xz file4 file5
+	$ bzip2 -d *.bz2
+	$ ls
+	file1.gz file2.gz file3 file4.xz file5.xz file4 file5
+	$ zcat file1.gz
+	ciao a tutti
+\end{cmdc}
+
+\subsection{Strumenti per l'archiviazione dei file}
+\label{subsec:Strumenti-per-l'archiviazione-dei-file}
+Il programma \tb{\tc{tar} (abbreviativo di \ti{tape archive} ovvero archivio su nastro) è probabilmente lo strumento di archiviazione più utilizzato sui sistemi Linux, i file creati con tale programma sono chiamati \ti{tar ball}}, il comando per eseguire il programma supporta molti flag, di seguito si riportano i più importanti e comunemente utilizzati:
+\begin{itemize}
+    \item \tb{\tc{-c}}: crea un archivio.
+    \item \tb{\tc{-x}}: estrae un archivio.
+    \item \tb{\tc{-v}}: mostra dettagli durante l'operazione.
+    \item \tb{\tc{-t}}: mostra il contenuto dell'archivio.
+    \item \tb{\tc{-f}}: specifica il nome dell'archivio, se presente deve trovarsi sempre ultimo tra i flag in modo tale che la stringa successivamente digitata sia interpretata come il nome dell'archivio su cui si vuole operare.
+    \item \tb{\tc{-z}}: comprime l'archivio con il programma \tc{gzip}
+    \item \tb{\tc{-j}}: comprime l'archivio con il programma \tc{bzip2}
+    \item \tb{\tc{-J}}: comprime l'archivio con il programma \tc{xz}
+\end{itemize}
+I flag consentiti tendono a modificare anche la struttura del comando per questo non è stata riportata in chiaro, \tb{il comportamento base del comando quando si desidera creare un archivio consiste nel copiare i dati dei file e directory specificate e poi scriverli nel file creato} (che è buona norma chiamare con un nome terminante con il suffisso \tc{.tar} per il solito discorso che in questo modo sia immediatamente noto all'utente come deve maneggiare l'archivio). Creato un archivio \tb{in genere l'oprarazione più comune che si vuole effettuare consiste nella lettura dei file contenuti in esso (inteso non il contenuto dei file ma il contenuto del file archivio che consiste in un elenco di file), a tale scopo si una il flag \tc{-t}}, notare che il comando con tale flag mostra non solo i nomi dei file presenti nell'archivio \tb{ma anche il percorso relativo o assoluto di ciascuno nel momento in cui è stato inserito nell'archivio}. L'operazione di \tb{estrazione dei file dall'archivio avviene inserendo il flag \tc{-x}}, il comportamento di default del comando è importante che sia ben chiaro: \tb{passato il file archivio al comando vengono creati tutti i file contenuti in esso, la posizione in cui ciascun file viene creato dipende dal percorso utilizzato durante la fase di inserimento di esso nell'archivio, pertanto se il file è stato inserito nell'archivio con un percorso assoluto allora, in fase di estrazione, il programma lo ricrea nel sistema seguendo precisamente il percorso assoluto specificato, se invece il file è stato inserito con percorso relativo allora viene seguito quello}. In molti casi il comportamento di default del comando per l'estrazione è comodo tuttavia bisogna fare attenzione \tb{perchè se in fase di estrazione un file estratto possiede un nome identico a quello di un file già esistente (nella directory di destinazione) allora si verifica sovrascrittura (il file estratto sovrascrive quello preesistente)}. Come al solito sotto si riportano degli esempi, la struttura di partenza della directory \tc{user} è quella mostrata in \ref{fig:Struttura-interna-della-directory-user}
+\begin{cmdc}{\tc{tar}}{tar}
+	$ pwd
+	/home/user
+	$ tar -cf arc-doc.tar ./documenti
+	$ tar -cf ./documenti/arc-scuola.tar ./scuola
+	$ ls documenti .
+	documenti:
+	arc-scuola.tar fileZ1
+	.:
+	documenti musica scuola arc-doc.tar
+	$ tar -tf arc-doc.tar
+	./documenti/
+	.documenti/fileZ1
+	$ cp arc-doc.tar ./scuola
+	$ tar -xf arc-doc.tar
+	$ ls scuola
+	documenti
+	$ tar -czf arc-musica.tar.gz ./musica/fileA1 ./musica/fileA2
+	$ tar -tf arc-musica.tar.gz
+	./musica/
+	./musica/fileA1
+	./musica/fileA2
+	$ tar -xzf arc-musica.tar.gz
+\end{cmdc}
+
+
+\section{Redirezione di I/O}
+\label{Redirezione-di-I/O}
+Normalmente la Command Line di Linux redirige le informazioni tramite specifici canali standard, la tastiera è considerata lo standard input (\ti{stdin} o canale 0) di un comando e lo schermo è considerato lo standard output (\ti{stdout} o canale 1), un altro canale ha lo scopo di redirigere l'output di errore (\ti{stderr} o canale 2) di un comando o i messaggi di errore di un programma. Tuttavia in genere è molto utile redirigire l'input e/o l'output, ad esempio per passare ad un programma l'output generato da un altro oppure per avere l'output scritto su di un file anziche nella console, a tali scopi si usano programmi e comandi specifici. L' \tb{operatore \ti{pipe (|)} è un particolare carattere che permette di creare le \ti{pipeline} ovvero delle catene di comandi dove automaticamente l'output di un comando è usato come input dal successivo scritto dopo il carattere pipe}, in altre parole risparmia l'operazione di reindirizzamento verso ad esempio file temporanei che poi dovrebbero essere letti da successivi comandi. Scrivendo un comando dove sono presenti più pipe i comandi intermedi sono chiamati \ti{filtri} in quanto il loro effeto non è direttamente visibile all'utente essendo un comando il cui output è passato ad un altro comando.
+
+\subsection{Redirigere l' Output}
+\label{subsec:Redirigere-l-Output}
+Quando si desidere \tb{redirigere lo standard output (stdout, canale 1) di un comando in un file specifico si usano i simboli > e > >, il primo crea o sovrascrive il file dentro al quale riporta a modi testo l'output mentre il secondo crea o aggiunge al file specificato}, a modi testo, l'output. Se si intende redirigere \tb{l'output che normalmente andrebbe sul canale 2 (stderr, output di errori) allora si devono usare i simboli \tc{2} > e \tc{2}> >}, il comportamento dei due è identico a quello descritto sopra. \tb{I simboli \& > e \& > > reindirizzano sia il canale 1 che il canale 2 verso il file specificato dopo}, anche qui la differenza tra i due è la solita, il primo sovrascrive o crea mentre il secondo aggiunge o crea. In tutte le distribuzioni Linux esiste il seguente file: \tc{/dev/null}, questo file è considerato il \ti{cestino} o \ti{buco nero} e può essere utile reindirizzare gli output indesiderati in esso in quanto questo rimuove istantaneamente qualsiasi dato che riceve.
+
+\subsection{Redirigere l' Input}
+\label{subsec:Redirigere-l-Input}
+Come prima cosa è necessario capire cosa si intende per redirigere l'input, infatti il caso con l'output è immediato mentre quello con l'input richiede precisazioni; \tb{Redirigere l'input è inteso come forzare l'utilizzo del canale 0 a sorgenti che normalmente non lo utilizzano, quindi ad esempio passare come argomento ad un comando il testo scritto in un file. Il simbolo \tc{<} è usato per passare come input tutto quello scritto nel file specificato, tipicamente è utilizzato con comandi che modificano le stringhe fornite in ingresso e mostrano sulla stdout il risultato, il simbolo \tc{< <} è usato per fornire input multiriga} al comando, richiede che si definisca da subito un delimitatore che viene poi usato per delimitare il testo scritto.
+
+
+\section{Directory di sistema}
+\label{sec:Directory-di-sistema}
+Il sistema Unix è stato originariamente progettato per i computer mainframe a metà degli anni '60. Questi computer erano condivisi tra molti utenti che accedevano alle risorse di sistema tramite terminali. Questa idea di base è presente in moltissime distribuzioni Linux e tale aspetto si può notare osservando il modo in cui esso è organizzato in termini di directory di sistema, \tb{tale modalità è diventata praticamente uno standard chiamata \ti{Filesystem Hierarchy Standard (FHS)}, la figura \ref{fig:FHS} mostra in cosa consiste tale standard in termini di directory}.
+
+\fig[0.8]{FHS.png}{FHS}{FHS}
+
+
+Il contenuto di queste cartelle riguarda l'intero sistema quindi tutti gli utenti e qualsiasi modifica ad essi richiede permessi amministratore. Nel seguito vengono spiegate le funzioni e i file che ogni cartella possiede.
+
+\subsection{La directory home}
+\label{subsec:La-directory-home}
+È una delle directory meno complesse, \tb{contiene directory e file che ciascuno utente può liberamente creare e modificare senza dover richiedere particolari permessi root essendo i dati personali}. Tipicamente contiene sottodirectory di primo livello che riportano il nome dell'utente e in essa un numero variabile di altre sottodirectory e file completamente a discrezione dell'utente. Quando viene aperta una sessione shell, la CLI o il terminale, presenta un certo utente e la directory di lavoro iniziale è sempre \tc{/home/nome\_utente} abbreviata con il carattere $\thicksim$, se si vuole \tb{cambiare utente e quindi sottodirectory nella directory home è necessario digitare il comando \sh{su <flag> <altro\_utente>}} i flag sono parecchi, per ora il più importante \tb{da ricordare è \ti{-} il quale permette di effetuare un cambio totale dell'utente dove infatti vengono importate anche le variabili di ambiente di \tc{altro\_utente}}, se \tb{non si utilizza tale flag si effettua un cambio parziale dove praticamente le variabili di ambiente usate dalla shell sono ancora quelle dell'utente iniziale}. Quando si effettua un cambio totale dell'utente notiamo che il carattere $\thicksim$ mantiene il suo significato ma il suo contenuto è diverso in quanto ora il percorso assoluto che rappresenta è \tc{/home/altro\_utente}. Quando si esegue il comando, \tb{se l'utente a cui stiamo cercando di accedere possiede una password ovviamente in questa fase viene richiesta}. È possibile accedere a specifici file nelle cartelle di un altro utente senza dover effettuare il cambio di profilo anche se comunque questo richiederà la password. 
+Un parallelismo efficace che descrive l'organizzazione della directory home è quello che la paragona ad un palazzo, ogni piano rappresenta un utente il quale è proprietario di tutto il piano e quindi può decidere liberamente come amministrarlo in termini di stanze (directory) e mobili (file), quanto decide un utente sul proprio piano non influenza quanto accade negli altri e se un utente vuole entrare nelle stanze altrui deve prima bussare alla porta del piano dell'altro utente (password del profilo). La manutenzione di tutto il palazzo è una responsabilità attribuita ad almeno uno degli utenti e (per dire che il buon funzionamento del sistema è garantito dall'amministratore che ha accesso a particolari file di configurazione)
+
+\subsection{La directory dev}
+\label{subsec:La-directory-dev}
+È una directory fondamentale \tb{all'interno della quale risiedono sottodirectory e file speciali che servono a interfacciare l'hardware montato con il sistema operativo}, possiamo dire che rappresentano il primo punto di contatto fra software e hardware tanto che viene gestita direttamente dal kernel che l' aggiorna dinamicamente. Nella directory dev sono presenti due tipi di file:
+\begin{itemize}
+    \item \ti{\tb{Character devices}}: file creati tipicamente per dispositivi hardware che manipolano un carattere (quindi al massimo 1 o 2 byte) alla volta, tipicamente tastiere, mouse, terminali, porte seriali. 
+    \item \ti{\tb{Block devices}}: file creati tipicamente per dispositivi capaci di manipolare molti byte alla volta, ad esempio SSD, hard disk.
+\end{itemize}
+Molti dei file nella caretella dev sono consultabili e modificabili dall'utente, va precisato che \tb{modifiche a questi file hanno ripercussioni molto importanti sul sistema, se ad esempio si scrive direttamente e senza criterio nel file che interfaccia il sistema operativo con un dispositivo di memoria è molto probabile compromettere in modo irreversibile il dispositivo di memoria} che come minimo diventa inutilizzabile per il sistema operativo e, nei casi peggiori, tutti i dati in esso si corrompono. Molto più \tb{legittime sono le modifiche ai file driver dei dispositivi come tastiera, hub usb, monitor e altri che potrebbero richiedere all'utente di specificare particolari comportamenti tra sistema operativo e periferica}. Bisogna sottolineare che in generale i file in questa directory, visto il significato che hanno per il sistema operativo, sono da modificare con molta attenzione, \tb{però l'opearazione di lettura non è mai dannosa per il file} (anche se potrebbe esserlo per il terminale o qualsiasi altro dispositivo usato per la lettura se l'output è molto grande e non limitato) \tb{e se è noto il file particolare associato a del particolare hardware è possibile condurre indagini di debug molto efficienti}.
+
+\subsection{Le directory bin}
+\label{subsec:Le-directory-bin}
+Tutti \tb{i programmi eseguibili sul sistema Linux sono file binari e vengono memorizzati in varie directory di sistema che spesso portano nel nome il termine \tc{bin}}, esistono diverse directory \tc{bin} perchè \ti{il sistema segue tutta una serie di criteri per categorizzare i vari file binari}:
+\begin{itemize}
+    \item \tb{\tc{/bin}}: contiene i programmi essenziali per tutti gli utenti tipo \tc{ls}, \tc{cp}, \tc{rm}, \tc{mkdir}. Nelle distribuzioni più recenti non è presente ed è sostituita da \tc{usr/bin}.
+    \item \tb{\tc{/sbin}}: contiene programmi essenziali per l'amministrazione del sistema.  come \tc{fsck} e texttt{reboot}. Nelle distribuzioni più recenti non è presente ed è sostituita da \tc{usr/sbin}.
+    \item \tb{\tc{usr/bin}}: contiene i programmi installati da utenti normali, tali programmi vengono scaricati, installati e aggiornati dal package manager della distribuzione. 
+    \item \tb{\tc{usr/sbin}}: contiene i programmi di amministrazione meno critici quindi in alcuni casi non necessari, anche questi sono scaricati, installati e aggiornati dal package manager. 
+    \item \tb{\tc{usr/local/bin}}: contiene programmi installati manualmente dagli utenti tipicamente si tratta di script bash scritti appositamente dall'utente per effetuare determinate operazioni sul sistema.
+    \item \tb{\tc{usr/local/sbin}}: contiene strumenti amministrativi personalizzati quindi script o eseguibili personalizzati dall'amministratore e non gestiti dal package manager.
+    \item \tb{\tc{/opt}}: contiene software proprietario, in pratica può contenere programmi non gestiti dal package manager e non direttamente collocabili per utilizzo in \tc{usr/local/bin} e \tc{usr/local/sbin}.
+\end{itemize} 
+Si noti che \tb{l'utente root ovvero l'amministartore del sistema può consultare liberamente ciascuna delle directory sopra riportate e quindi può vedere quanti programmi sono installati sulla macchina indipendentemente dal numero di utenti che la utilizzano}, invece un generico utente non può farlo a meno che l'amministratore non conceda i permessi necessari.
+
+\subsection{Le directory etc}
+\label{subsec:Le-directory-etc}
+La directory \tc{/etc} \tb{contiene i file di configurazione di rete, sicurezza, applicazioni e utenti, tali file sono molto importanti perchè permettono di gestire il modo in cui il servizio viene fornito all'utente della macchina}. In distribuzioni abbastanza datate i file di configurazione sono tipicamente lunghi file di testo, con il tempo si è visto che tale approccio non è comodo, soprattutto per qui servizi altamente configurabili, per questo, in distribuzioni recenti \tb{tutti i file di configurazione inerenti ad un particolare servizio si trovano dentro una directory apposita, per mantenere una sorta di compatibilità le directory portano il nome originario del file e terminano con \tc{.d}}. La directory internamente è molto articolata cioè sono presenti molte sottodirectory e file e non è facile darne una rappresentazione generica perchè molto dipende dal numero di programmi installati e in parte anche dal tipo di distribuzione in uso, di seguito si riportano le directory più importanti:
+\begin{itemize}
+    \item \tb{File di configurazione di sistema}:
+    \begin{itemize}
+        \item \tb{\tc{etc/passwd}}: contiene l'elenco degli utenti con informazioni annesse tipo la home directory e la shell predefinita utilizzata.
+        \item \tb{\tc{etc/shadow}}: contiene le password cifrate degli utenti e gruppi e spesso anche la scadenza della password o l'ultima modifica.
+        \item \tb{\tc{etc/group}}: contiene l'elenco dei gruppi e dei loro membri, ad esempio il gruppo \tb{sudo} è il classico gruppo amministratori, se un utente si trova in tale gruppo e conosce la password può operare come un amministratore.
+        \item \tb{\tc{etc/fstab}}: definisce il filesystem da montare all'avvio, senza scendere nei dettagli tecnici diciamo che le configurazioni in esso sono molto importanti per interfacciare il sistema con un dispositivo di memoria.
+        \item \tb{\tc{etc/hostname}}: contiene il nome della macchina visibile sulla rete.
+    \end{itemize}
+    \item \tb{File di configurazione di rete}:
+    \begin{itemize}
+        \item \tb{\tc{etc/hosts}}: contiene un elenco che mappa gli indirizzi IP ai corrispettivi servizi.
+        \item \tb{\tc{etc/resolv.conf}}: contiene un elenco che mappa i servizi DNS.
+        \item \tb{\tc{/etc/network/interfaces}}: permette di gestire manualmente l'interfaccia di rete.
+    \end{itemize}
+    \item \tb{File di configurazione dei pacchetti}:
+    \begin{itemize}
+        \item \tb{\tc{/etc/apt/preferences.d/}}: su sistemi Debian-based è una directory e contiene un file per ogni preferenza rigurado la gestione di un particolare pacchetto da parte del package manager, è molto utile quando si hanno molte repository da cui scaricare pacchetti e per il mantenimento di alcuni si preferisce scegliere una repository apposita.
+        \item \tb{\tc{/etc/apt/sources.list.d/}}: su sistemi Debian-based è una directory e contiene un file per ogni indirizzo ad una repository che il gestore di pacchetti consulta per scaricare le applicazioni. Il modo in cui il gestore consulta queste repo dipende anche dai file di configurazione scritti in \tc{/etc/apt/preferences.d/}.
+    \end{itemize}
+    \item \tb{File di configurazione sicurezza}:
+    \begin{itemize}
+        \item \tb{\tc{etc/sudoers}}: specifica i permessi garantiti agli utenti presenti nel gruppo \tc{sudo}.
+        \item \tb{\tc{/etc/cron.d/}}: permette di scrivere azioni pianificate che vengono eseguite secondo un certo criterio in modo automatico.
+    \end{itemize}
+\end{itemize}
+A livello utente i singoli programmi memorizzano le proprie configurazioni in file nascosti (il nome dei file iniziano con il carttere ".") presenti nella directory \tc{/home/nome\_utente}, distribuzioni recenti raccolgono tutti questi file in una directory di configurazione cioè: \tc{/home/nome\_utente/.config}.
+
+
+
+
+%\cite{example-website}
+
+
+% corsivo solo per parole chiave alla prima apparizione e per pezzi di comandi e percorsi

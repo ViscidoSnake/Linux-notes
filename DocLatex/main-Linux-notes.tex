@@ -1,0 +1,66 @@
+\documentclass{Linux-notes}
+
+%% Set up the bibliography
+\usepackage{biblatex}
+\addbibresource{main-Linux-notes.bib}
+
+%% Additional packages and commands
+\usepackage{parskip}
+\setlist{itemsep=-2pt} % Reducing white space in lists slightly
+\renewcommand{\deg}{\si{\degree}\xspace} % Use \deg easily, everywhere
+
+%% ----------------------------------------------------------------------
+%%    Begin of document + Frontmatter (Roman page numbering)
+%% ----------------------------------------------------------------------
+
+\begin{document}
+
+\frontmatter
+
+%% Define the main parameters
+\title{Appunti}
+%\subtitle{A Catchy Optional Subtitle \\ that Grabs the Attention}
+\author{Stacchiotti Elia}
+
+%\subject{AB1234: Optional Course Name} % Cover only
+%\affiliation{Delft University of Technology} % Cover only
+\coverimage{figures/cover.png} % Aspect ratio of 2:3 (portrait) recommended
+\definecolor{title}{HTML}{FFFFFF} % Color for cover title
+
+\makecover
+
+
+%\input{frontmatter/preface}
+%\input{frontmatter/summary}
+
+\tableofcontents
+\renewcommand{\lstlistingname}{Listato}
+\renewcommand{\lstlistlistingname}{Listati}
+\lstlistoflistings
+%\listoffigures
+%\listoftables
+
+%\input{frontmatter/nomenclature}
+
+%% ----------------------------------------------------------------------
+%%    Mainmatter (Arabic page numbering)
+%% ----------------------------------------------------------------------
+
+\mainmatter
+
+%\input{mainmatter/introduction}
+
+\input{mainmatter/Linux-general} % Create file to add
+\input{mainmatter/Linux-exercises} % Create file to add
+
+
+%% Prevent urls running into margins in bibliography
+\setcounter{biburlnumpenalty}{7000}
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{7000}
+
+%% Add bibliography
+\printbibliography[heading=bibintoc,title=Fonti]
+
+
+\end{document}
