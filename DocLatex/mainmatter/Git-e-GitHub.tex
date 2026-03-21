@@ -1,24 +1,19 @@
-\chapter{GIT e GitHub}
+\chapter{Git e GitHub}
 \label{chapter:git-e-github}
-In questo capitolo vengono spiegati due strumenti quali \tb{Git} e \tb{GitHub}, molto utili per la sincronizzazione e condivisione online di file, pur non essendo strettamente legati al tema Linux sono comunque utili da conoscere in quanto molto supportati da questo sistema, anche dal punto di vista filosofico, semplici, efficaci e versatili.
+In questo capitolo vengono introdotti due strumenti fondamentali nello sviluppo software moderno: \tb{Git} e \tb{GitHub}. Essi sono ampiamente utilizzati, soprattutto nel contesto open source, dove per definizione l'intera community è invitata a contribuire attivamente ai progetti.
 
-\section{GIT}
+Sebbene spesso vengano utilizzati in modo coordinato, è importante distinguerne chiaramente i ruoli. \tb{Git è un sistema di controllo di versione distribuito, che consente di tracciare nel tempo le modifiche ai file, mantenendo una cronologia completa del progetto}. In altre parole, Git permette di effettuare il \ti{versioning}, rendendo possibile tornare a versioni precedenti, confrontare modifiche e lavorare in parallelo su diverse funzionalità. \textbf{GitHub}, invece, è una \tb{piattaforma online che consente di ospitare repository Git su un server remoto, rendendoli accessibili tramite Internet}. Questo facilita la collaborazione tra più sviluppatori, offrendo strumenti aggiuntivi come la gestione delle modifiche, il tracciamento dei problemi e la revisione del codice. Mentre le funzionalità di hosting offerte da GitHub possono essere sostituite da altri servizi simili (o anche da server privati), il ruolo di \tb{Git come sistema di versionamento rimane centrale ed è difficilmente rimpiazzabile}.
+
+Nei paragrafi successivi verranno analizzati separatamente Git e GitHub, partendo dai concetti fondamentali fino ad arrivare al loro utilizzo combinato.
+
+
+\section{Git}
 \label{sec:git}
-% breve intro sulla storia e cosa fa in breve
-Il controllo di versione è una procedura che consiste nel tracciare il modo con cui i dati in un file vengono modificati nel tempo, GIT è molto forte in questo, con il controllo attivo è possibile ripristinare in qualsiasi momento lo stato del file in corrispondenza della data specificata. Il metodo con cui GIT tiene traccia delle versioni dei file è innovativo e risolve un problema molto importante ovvero quello di dover avere file di backup 
-, talvolta se il file deve poter essere modificato da più utenti, tutti i backup devono trovarsi in un server e questo rende il tutto ancora più complicato da gestire; GIT si dice essere un sistema distribuito ovvero il processo di \ti{file versioning} è organizzato in modo tale che ogni utente riesca a modificare in locale il file, registrare le modifiche attraverso GIT e poi, quando è possibile connettersi ad un server, più nello specifico GitHub, il file modificato e le versioni vengono aggiornate lasciando ad altri utenti il file aggiornato, anche dal punto di vista del \ti{versioning}
+\tb{Il \ti{versioning} dei file è una pratica che permette di mantenere una cronologia delle modifiche rendendo possibile in qualsiasi momento risalire a uno stato precedente dei file}. Un modo rudimentale per ottenere questo risultato consiste nel creare copie complete dell'intero archivio ogni volta che vengono effettuate delle modifiche e conservarle per eventuali ripristini futuri. 
+Sebbene questo approccio possa sembrare inizialmente funzionale, presenta diverse limitazioni, in primo luogo la dimensione dell'archivio cresce rapidamente: più i file sono grandi, più le copie richiedono spazio di archiviazione, in secondo luogo, in un contesto condiviso tra più utenti, avere molte copie indipendenti (non collegate tra loro) rende difficile tracciare le modifiche effettuate e comprendere come il progetto si sia evoluto nel tempo. Infine, anche la sincronizzazione su sistemi cloud risulta inefficiente, specialmente in presenza di archivi di grandi dimensioni.
 
- ma non solo, infatti l'innovativo modo con cui GIT effettua il \ti{versioning} permette di avere completo controllo anche su grandi progetti dove molte persone collaborano e quindi eventi come modifiche simultanee ai file possono essere comuni e non banali da gestire (nel contesto di \ti{file versioning}), per questo GIT si dice essere distribuito, in pratica ogni utente che possiede il progetto possiede anche il versionamento completo di questo . 
+Git nasce proprio per risolvere questi problemi, introducendo un sistema di versionamento efficiente e strutturato. A differenza dei sistemi di controllo di versione centralizzati che si basano su un server remoto per gestire e sincronizzare le modifiche tra più utenti, \tb{Git è un sistema \ti{distribuito} ovvero l'intera cronologia del progetto è salvata in locale su ogni macchina}, questo approccio offre diversi vantaggi: è possibile lavorare completamente offline sull'archivio, avendo la possibilità di consultare la cronologia, ripristinare versioni precedenti dei file e continuare lo sviluppo senza dipendere dalla connessione a Internet. Un altro aspetto fondamentale riguarda il modo in cui Git memorizza le modifiche infatti \tb{le dimensioni di un archivio Git rimangono generalmente contenute grazie a un sistema basato su \ti{istantanee} (\ti{snapshots})}. Per comprendere questo concetto, è utile fare un confronto con altri sistemi di versionamento in particolare quelli che usano un approccio basato sulle differenze dove sostanzialmente viene salvata una versione iniziale dei file e, successivamente, solo le modifiche (dette \ti{diff}) rispetto alla versione precedente. L'approccio \tb{per istantanee usato da Git prevede invece che ogni volta che viene salvata una nuova versione (commit), il sistema registra un'\ti{istantanea completa} dello stato dei file in quel momento} (per evitare sprechi di spazio, Git non duplica realmente tutti i file, se un file non è stato modificato, viene semplicemente mantenuto un riferimento alla versione già esistente). Riassunto in 2 righe, \tb{Git riesce a combinare i vantaggi di una rappresentazione completa dello stato del progetto con un utilizzo efficiente dello spazio}.
 
-
-Allo stesso tempo GIT è pensato anche per permettere la condivisione dei file con versione in modo che questi possano essere modificati  
+Iniziamo adesso con il vedere in modo più pratico come funziona Git e come usarlo, una cartella Git è facilmente riconoscibile grazie al fatto che al suo interno si trova la cartella \tc{.git} che di fatto è quella attraverso la quale sono effettuate le istantanee, tutti i file contenuti in essa fanno riferimento ad una particolare versione della cartella stessa e l'unico modo per ottenere informazioni su questa versione e in genere sullo storico di tutta la cartella, è avviare Git, che nel più classico dei casi si presenta con interfaccia a riga di comando. Restando per un momento ancora sul concetto di contenuto di una cartella gestita attraverso Git, 
 
 
- è stato sviluppato avendo sempre la possibilità di ritornare, in qualsiasi momento, ad un punto 
-\begin{itemize}
-	\item \tb{Controllo di versione}:
-	\item \tb{Distribuito}:
-	\item \tb{Controllo di versione}:
-	\item \tb{Controllo di versione}:
-	\item \tb{Controllo di versione}: 
-\end{itemize}
