@@ -14,6 +14,56 @@ Sebbene questo approccio possa sembrare inizialmente funzionale, presenta divers
 
 Git nasce proprio per risolvere questi problemi, introducendo un sistema di versionamento efficiente e strutturato. A differenza dei sistemi di controllo di versione centralizzati che si basano su un server remoto per gestire e sincronizzare le modifiche tra più utenti, \tb{Git è un sistema \ti{distribuito} ovvero l'intera cronologia del progetto è salvata in locale su ogni macchina}, questo approccio offre diversi vantaggi: è possibile lavorare completamente offline sull'archivio, avendo la possibilità di consultare la cronologia, ripristinare versioni precedenti dei file e continuare lo sviluppo senza dipendere dalla connessione a Internet. Un altro aspetto fondamentale riguarda il modo in cui Git memorizza le modifiche infatti \tb{le dimensioni di un archivio Git rimangono generalmente contenute grazie a un sistema basato su \ti{istantanee} (\ti{snapshots})}. Per comprendere questo concetto, è utile fare un confronto con altri sistemi di versionamento in particolare quelli che usano un approccio basato sulle differenze dove sostanzialmente viene salvata una versione iniziale dei file e, successivamente, solo le modifiche (dette \ti{diff}) rispetto alla versione precedente. L'approccio \tb{per istantanee usato da Git prevede invece che ogni volta che viene salvata una nuova versione (commit), il sistema registra un'\ti{istantanea completa} dello stato dei file in quel momento} (per evitare sprechi di spazio, Git non duplica realmente tutti i file, se un file non è stato modificato, viene semplicemente mantenuto un riferimento alla versione già esistente). Riassunto in 2 righe, \tb{Git riesce a combinare i vantaggi di una rappresentazione completa dello stato del progetto con un utilizzo efficiente dello spazio}.
 
-Iniziamo adesso con il vedere in modo più pratico come funziona Git e come usarlo, una cartella Git è facilmente riconoscibile grazie al fatto che al suo interno si trova la cartella \tc{.git} che di fatto è quella attraverso la quale sono effettuate le istantanee, tutti i file contenuti in essa fanno riferimento ad una particolare versione della cartella stessa e l'unico modo per ottenere informazioni su questa versione e in genere sullo storico di tutta la cartella, è avviare Git, che nel più classico dei casi si presenta con interfaccia a riga di comando. Restando per un momento ancora sul concetto di contenuto di una cartella gestita attraverso Git, 
+Iniziamo ora ad analizzare in modo più pratico come funziona Git e come utilizzarlo. Una cartella gestita da Git è facilmente riconoscibile dalla presenza della directory \tc{.git}, che contiene tutte le informazioni necessarie al versionamento del progetto, inclusa la cronologia delle versioni. 
+Accanto a questa cartella possono essere presenti altri file, essi rappresentano lo stato corrente del progetto, ovvero l'ultima versione salvata (detta \tb{commit}) su cui è possibile lavorare. Questi file possono essere modificati, eliminati o aggiunti e una volta completate le modifiche, è possibile registrare una nuova versione del progetto utilizzando un comando Git (\tc{git commit}, successivamente spiegato). La costruzione di una versione prevede che ogni file possa trovarsi in uno dei seguenti tre stati:
+\begin{itemize}
+	\item \tb{\ti{Committed}}: il file è presente nell'ultima versione del progetto, più in generale lo stato del file è riconducibile ad una delle versioni del progetto.
+	\item \tb{\ti{Modified}}: il file è stato modificato rispetto alla versione di partenza ma le modifiche non sono ancora state confermate per essere inserite nella nuova versione che verrà creata.
+	\item \tb{\ti{Staged}}: il file è stato selezionato per essere incluso nella prossima versione. In questo stato, Git "fotografa" lo stato corrente del file che costituirà la nuova versione.
+\end{itemize}
+Questi tre stati corrispondono a tre aree logiche in cui è possibile suddividere il funzionamento di Git:
+\begin{itemize}
+	\item \tb{\ti{Working Directory}}: contiene i file su cui si lavora attivamente, è un concetto indipendente dagli stati che assumono i file, quindi nella \ti{Working Directory} sono presenti file \ti{committed}, \ti{modified} e \ti{staged}.
+	\item \tb{\ti{Staging Area}}: contiene, come istantanee, i file pronti per essere inclusi nella prossima versione. 
+	\item \tb{\ti{Repository}}: contiene, come istantanee, i file presenti nelle versioni salvate (commit) del progetto.
+\end{itemize}
+In termini operativi, il flusso di lavoro tipico è il seguente: si parte con l'avere tutti file \ti{committed} appartenenti all'area \ti{Repository}, eventualmente si modificano (essendo che fanno parte della \ti{Working Directory}, passano allo stato \ti{modified}) poi si selezionano le modifiche da includere nella nuova versione collocando lo stato dei file (stato inteso come contenuto) nella \ti{Staging Area}, in quel frangente il file è nello stato \ti{staged}, infine, con un commit, si salvano definitivamente tutte le istantanee dei file nella \ti{Staging Area} nel \ti{Repository} che di fatto diventano \ti{committed}, l'immagine nella figura \ref{fig:git-areas} descrive il workflow appena descritto.
+ \fig[0.7]{git-areas}{Tipico workflow git per effetuare il \ti{versioning di file}}{git-areas}
+
+Dopo aver visto come funziona Git per quanto riguarda la creazione di una versione vediamo adesso come si fa in pratica, cioè a livello di comandi. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
