@@ -27,13 +27,207 @@ Questi tre stati corrispondono a tre aree logiche in cui è possibile suddivider
 	\item \tb{\ti{Staging Area}}: contiene, come istantanee, i file pronti per essere inclusi nella prossima versione. 
 	\item \tb{\ti{Repository}}: contiene, come istantanee, i file presenti nelle versioni salvate (commit) del progetto.
 \end{itemize}
-In termini operativi, il flusso di lavoro tipico è il seguente: si parte con l'avere tutti file \ti{committed} appartenenti all'area \ti{Repository}, eventualmente si modificano (essendo che fanno parte della \ti{Working Directory}, passano allo stato \ti{modified}) poi si selezionano le modifiche da includere nella nuova versione collocando lo stato dei file (stato inteso come contenuto) nella \ti{Staging Area}, in quel frangente il file è nello stato \ti{staged}, infine, con un commit, si salvano definitivamente tutte le istantanee dei file nella \ti{Staging Area} nel \ti{Repository} che di fatto diventano \ti{committed}, l'immagine nella figura \ref{fig:git-areas} descrive il workflow appena descritto.
- \fig[0.7]{git-areas}{Tipico workflow git per effetuare il \ti{versioning di file}}{git-areas}
+In termini operativi il flusso di lavoro tipico è il seguente: si parte con l'avere tutti file \ti{committed} appartenenti all'area \ti{Repository}, eventualmente si modificano (essendo che fanno parte della \ti{Working Directory}, passano allo stato \ti{modified}) poi si selezionano le modifiche da includere nella nuova versione collocando lo stato dei file (stato inteso come contenuto) nella \ti{Staging Area}, in quel frangente il file è nello stato \ti{staged}, infine, con un commit, si salvano definitivamente tutte le istantanee dei file nella \ti{Staging Area} nel \ti{Repository} che di fatto diventano \ti{committed}, l'immagine nella figura \ref{fig:git-areas} descrive il workflow appena descritto.
+\fig[0.7]{git-areas}{Tipico workflow git per effetuare il \ti{versioning di file}}{git-areas}
 
-Dopo aver visto come funziona Git per quanto riguarda la creazione di una versione vediamo adesso come si fa in pratica, cioè a livello di comandi. 
+Dopo aver visto come funziona Git per quanto riguarda la creazione di una versione vediamo adesso come si fa in pratica, cioè a livello di comandi. Si può iniziare creando una cartella nel sistema, apriamo poi Git Bash all'interno di essa e digitiamo il comando \sh{git init}, questo crea nella la cartella \tc{.git}, si può notare anche che compare la scritta \tc{master} accanto al percorso, successivamente sarà maggiormente chiaro ma tale scritta identifica con precisione una particolare versione che è poi quella su cui stiamo lavorando in termini di file. Digitiamo poi i comandi \sh{git config --global user.name < nome >} e \sh{git config --global user.email < email >} questi servono per impostare l'identità di chi effettua i commit (quindi le versioni), sono semplici stringhe e non esiste un processo di autenticazione, l'opzione \tc{--global} imposta come globali le configurazioni che andiamo a svolgere quindi dopo questi comandi, qualsiasi cartella sottoposta a versionamento avrà versioni firmate con \tc{< nome >} e \tc{< email >} inseriti. Con il comando \sh{git config --list} si può vedere tutta la configurazione Git attiva per la particolare cartella, leggendo in corrispondenza della riga \tc{core.editor= <nome editor attivo>} è possibile vedere quale editor interno Git utilizza, per cambiare "globalmente" questa impostazione si usa il comando \sh{git config --global core.editor < nome editor >} dove \tc{< nome editor >} deve essere tra quelli preinstallati nella versione di Git, tra i più comuni ci sono \ti{nano} e \ti{VIM}
+
+La cartella sottoposta a versionamento, allo stato attuale, non contiene file effettivi del progetto (i file presenti in \tc{.git} non rappresentano contenuto dell'archivio, ma sono utilizzati esclusivamente da Git per gestire il versionamento); è quindi possibile creare alcuni file di esempio. 
+In questo caso si consideri la struttura riportata in figura \ref{fig:esempio-struttura-Git}, dove i file \tc{.txt} contengono semplice testo, mentre il file \tc{.md} presenta una struttura del tipo:
+
+\begin{cmd}
+	# matematica
+	- fibonacci
+	- euclide
+	
+	# storia
+	- giolitti
+\end{cmd}
+
+\begin{figtree}{Struttura della cartella \tc{progetto-esempio} versionata con Git}{esempio-struttura-Git}
+	\dirtree{%
+		.1 progetto-esempio.
+		.2 matematica.
+		.3 fibonacci.txt.
+		.3 euclide.txt.
+		.2 storia.
+		.3 giolitti.txt.
+		.2 indice.md.
+	}
+\end{figtree}
+
+A questo punto si eseguono i comandi \sh{git add *} e successivamente \sh{git commit -m "initial commit"}; la sequenza di questi due comandi crea la prima versione della cartella \tc{progetto-esempio}, ovvero il primo commit, che per convenzione viene spesso chiamato \ti{initial commit}. 
+I file presenti nella cartella, visualizzabili ad esempio tramite il comando \sh{ll}, risultano ora salvati nel repository e si trovano quindi nello stato \ti{committed}.
+Si procede effettuando alcune modifiche, ad esempio si può modificare il file \tc{euclide.txt} aggiungendo la parola "Teorema" e il file \tc{fibonacci.txt} eliminando una parola qualsiasi, in seguito a queste operazioni, i file passano dallo stato \ti{committed} allo stato \ti{modified}. Eseguendo il comando \sh{git diff} è possibile visualizzare le differenze tra la versione salvata nel repository e quella attuale nella working directory (in realtà di default il comando \tc{dif} confronta i file che si trovano nella staging area e working directory, tuttavia se la staging area non viene modificata, e questo accade dopo ogni commit prima di eseguire il comando \sh{git add}, allora questa contiene solo i file \ti{committed}), a seguire è riportato l'output per questo esempio:
+\begin{cmd}
+snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git diff
+	warning: in the working copy of 'matematica/euclide.txt', LF will be replaced by CRLF the next time Git touches it
+	warning: in the working copy of 'matematica/fibonacci.txt', LF will be replaced by CRLF the next time Git touches it
+	diff --git a/matematica/euclide.txt b/matematica/euclide.txt
+	index fd8eea5..c46511f 100644
+	--- a/matematica/euclide.txt
+	+++ b/matematica/euclide.txt
+	@@ -1 +1,2 @@
+	Euclide padre della geometria.
+	+Teorema
+	diff --git a/matematica/fibonacci.txt b/matematica/fibonacci.txt
+	index 5f8a94b..ebd3924 100644
+	--- a/matematica/fibonacci.txt
+	+++ b/matematica/fibonacci.txt
+	@@ -1 +1 @@
+	-Fibonacci matematico Pisano. La successione aurea.
+	+Fibonacci matematico. La successione aurea.
+\end{cmd}
+
+Sono presenti varie informazioni tecniche come le righe \tc{diff --git ...}, \tc{index ...}, ecc.), che servono a identificare i file e le versioni coinvolte nel confronto, ma che possono essere inizialmente trascurate, gli elementi fondamentali sono invece le righe precedute dai simboli:
+\begin{itemize}
+	\item \tc{-}, che indica una riga presente nella versione precedente ma rimossa
+	\item \tc{+}, che indica una riga aggiunta nella versione modificata
+\end{itemize}
+Nel caso dell'esempio, si osserva che nel file \tc{euclide.txt} è stata aggiunta la riga \tc{Teorema}, mentre nel file \tc{fibonacci.txt} è stata modificata una riga tramite la rimozione di una parola (infatti nella versione attuale manca "Pisano"). Oltre a rilevare le modifiche, Git segnala che esse non sono ancora state incluse nella prossima versione; infatti, eseguendo il comando \sh{git status -u}, si ottiene un output che indica chiaramente come i file modificati non siano ancora stati aggiunti alla staging area, output del comando a seguire:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git status
+	On branch master
+	Changes not staged for commit:
+	(use "git add <file>..." to update what will be committed)
+	(use "git restore <file>..." to discard changes in working directory)
+	modified:   matematica/euclide.txt
+	modified:   matematica/fibonacci.txt
+	
+	no changes added to commit (use "git add" and/or "git commit -a")
+\end{cmd}
+Git evidenzia che i file \tc{euclide.txt} e \tc{fibonacci.txt} sono nello stato \ti{modified}, ma non ancora nello stato \ti{staged}, e quindi non verranno inclusi nel prossimo commit.
+Se si desidera includere nel prossimo commit lo stato attuale del file \tc{euclide.txt}, è possibile utilizzare il comando \sh{git add matematica/euclide.txt}; in questo modo il file passa allo stato \ti{staged}. 
+Eseguendo nuovamente \sh{git status}, si osserva che tale file è ora pronto per essere incluso nella nuova versione, mentre gli altri file rimangono invariati rispetto all'ultimo commit. Si può quindi eseguire il comando \sh{git commit -m "modificato il file euclide"}, creando una nuova versione del progetto.
+A questo punto, la working directory contiene sia file aggiornati all'ultima versione (committed), sia file che presentano modifiche non ancora salvate, come nel caso di \tc{fibonacci.txt}. Utilizzando nuovamente \sh{git diff}, si nota che le differenze relative a \tc{fibonacci.txt} sono le stesse di prima, poiché il confronto avviene sempre rispetto all'ultima versione salvata nel repository (che è la stessa della prima versione). 
+Può sembrare quindi che un file sia contemporaneamente committed e modified, ma in realtà si stanno considerando due versioni diverse dello stesso file: quella salvata nel repository e quella attualmente modificata nella working directory.
+Possiamo proseguire con l'esercizio aggiungendo il file \tc{fibonacci.txt} alla Staging area quindi facciamo \sh{git add matematica/fibonacci.txt}, a questo punto modifichiamo ancora una volta il file \tc{fibonacci.txt}, aggiungiamo la parola "Spirale", adesso eseguiamo il comando \sh{git status}, ecco l'output:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git status
+	On branch master
+	Changes to be committed:
+	(use "git restore --staged <file>..." to unstage)
+	modified:   matematica/fibonacci.txt
+	
+	Changes not staged for commit:
+	(use "git add <file>..." to update what will be committed)
+	(use "git restore <file>..." to discard changes in working directory)
+	modified:   matematica/fibonacci.txt
+\end{cmd}
+vediamo come lo stesso file risulti sia \ti{modified} che \ti{staged} ma ancora una volta non è così perchè quelli che si stanno considerando sono per Git due file diversi essendo che hanno un contenuto diverso. Facendo \sh{git diff} ora si vedono chiaramente le differenze tra la versione del file \ti{staged} e la versione del file \ti{modified} cioè quello nella working directory, con il comando \sh{git diff --staged} invece si vedono le differenze tra la versione del file \ti{committed} (quello nell'area repository) e la versione del file \ti{modified}, ancora, quello nella working directory, per completezza lascio sotto i due output.
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git diff
+	warning: in the working copy of 'matematica/fibonacci.txt', LF will be replaced by CRLF the next time Git touches it
+	diff --git a/matematica/fibonacci.txt b/matematica/fibonacci.txt
+	index ebd3924..3bf46c9 100644
+	--- a/matematica/fibonacci.txt
+	+++ b/matematica/fibonacci.txt
+	@@ -1 +1 @@
+	-Fibonacci matematico. La successione aurea.
+	+Fibonacci matematico. La successione aurea. Spirale
+\end{cmd}
+
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git diff --staged
+	diff --git a/matematica/fibonacci.txt b/matematica/fibonacci.txt
+	index 5f8a94b..ebd3924 100644
+	--- a/matematica/fibonacci.txt
+	+++ b/matematica/fibonacci.txt
+	@@ -1 +1 @@
+	-Fibonacci matematico Pisano. La successione aurea.
+	+Fibonacci matematico. La successione aurea.
+\end{cmd}
+
+Possiamo procedere effettuando un commit, si può facilmente verificare che la versione divenuta \ti{committed} del file \tc{fibonacci.txt} è quella che prima era stata inserita nella staging area. Quest'ultimo esempio è utile per far capire che Git tratta i file come istantanee ovvero quando si aggiungono file alla staging area è come se questi venissero "fotografati" e tale fotografia sarà presente nel successivo commit che si può allora intendere come una raccolta di "foto". 
+
+Con queste nozioni è possibile solo proseguire in avanti ovvero si possono continuare a creare versioni della cartella usando Git ma senza beneficiare di nessun "vantaggio", tuttavia questa prima parte era maggiormente pensata per dare un'idea del concetto di versione in Git.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%La cartella sottoposta a versionamento, allo stato attuale, non contiene file (tutto ciò che è nella cartella \tc{.git} non è da intendersi come effettivo contenuto, sono file che solo Git utilizza per gestire il versionamento), creiamo quindi alcuni file, in questo esempio la struttura usata è quella riportata in figura \ref{fig:esempio-struttura-Git}, il contenuto dei file \tc{.txt} è semplice testo multiriga mentre il file \tc{.md} è strutturato nel seguente modo:
+%\begin{cmd}
+%	# matematica
+%	- fibonacci
+%	- euclide
+%	
+%	# storia
+%	- giolitti
+%\end{cmd}
+%
+%\begin{figtree}{Struttura della cartella \tc{progetto-esempio} versionata con Git}{esempio-struttura-Git}
+%	\dirtree{%
+%		.1 progetto-esempio.
+%		.2 matematica.
+%		.3 fibonacci.txt.
+%		.3 euclide.txt.
+%		.2 storia.
+%		.3 giolitti.txt.
+%		.2 indice.md.
+%	}
+%\end{figtree}
+%
+%Ora eseguiamo il comando \sh{git add *} e subito dopo \sh{git commit -m "initial commit"}, la sequenza di questi due comandi ha creato la prima versione della cartella \tc{progetto-esempio}, ovvero il primo commit che per convenzione è sempre chiamato \ti{initial commit}, ora i file presenti nella cartella, che possono essere riportati a modi elenco eseguendo il comando \sh{ll}, sono tutti file committed. Proviamo a modificare il file \tc{euclide.txt} andando ad aggiungere al testo la parola "Teorema",  e il file \tc{fibonacci.txt} andando a eliminare una parola qualsiasi.
+%con queste operazioni i file passano dallo stato committed allo stato modified e eseguendo il comando \tc{git diff} è possibile visualizzare le differenze tra i file committed e i file modified (cioè quelli prima committed e poi passati a modified), per questo esempio l'output è il seguente:
+%\begin{cmd}
+%snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+%	$ git diff
+%	warning: in the working copy of 'matematica/euclide.txt', LF will be replaced by CRLF the next time Git touches it
+%	warning: in the working copy of 'matematica/fibonacci.txt', LF will be replaced by CRLF the next time Git touches it
+%	diff --git a/matematica/euclide.txt b/matematica/euclide.txt
+%	index fd8eea5..c46511f 100644
+%	--- a/matematica/euclide.txt
+%	+++ b/matematica/euclide.txt
+%	@@ -1 +1,2 @@
+%	Euclide padre della geometria.
+%	+Teorema
+%	diff --git a/matematica/fibonacci.txt b/matematica/fibonacci.txt
+%	index 5f8a94b..ebd3924 100644
+%	--- a/matematica/fibonacci.txt
+%	+++ b/matematica/fibonacci.txt
+%	@@ -1 +1 @@
+%	-Fibonacci matematico Pisano. La successione aurea.
+%	+Fibonacci matematico. La successione aurea.
+%\end{cmd}
+%
+%(magari descrivi un po a cosa diavolo fanno riferimento tutti i messaggi prima di +Teorema che è la cosa fondamentale da vedere). Oltre a rilevare la modifica Git mostra che le modifiche apportate non sono tracciate nella prossima versione, infatti digitando \tc{git status -u} l'output è il seguente:
+%\begin{cmd}
+%	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+%	$ git status
+%	On branch master
+%	Changes not staged for commit:
+%	(use "git add <file>..." to update what will be committed)
+%	(use "git restore <file>..." to discard changes in working directory)
+%	modified:   matematica/euclide.txt
+%	modified:   matematica/fibonacci.txt
+%	
+%	no changes added to commit (use "git add" and/or "git commit -a")
+%\end{cmd}
+%in pratica Git fa presente che i file \tc{euclide.txt} e \tc{fibonacci.txt} sono stati modificati ma attualmente il loro contenuto non è ancora stato considerato per essere inserito nel successivo commit ovvero lo stato del file è modified e non staged. Se nel prossimo commit vogliamo salvare lo stato attuale del file \tc{euclide.txt} si usa il comando \sh{git add matematica/euclide.txt}, facendo così il file passa allo stato staged ed eseguendo nuovamente il comando \sh{git status -u} si vede che ora l'unico nuovo file che costituirà la successiva versione è il file \tc{euclide.txt}, tutti gli altri presenti saranno identici a quelli committed e modified attuali (attenzione quelli modified ma nella versione committed!). Facciamo un commit, quindi \sh{git commit -m "modificato il file euclide"}, adesso il contenuto della working directory è costituito dai file committed ma anche dai file modified, in questo caso \tc{fibonacci.txt}, la cui modifica è iniziata un commit precedente, la versione di riferimento per il file è sempre e comunque però la stessa, infatti tra i file committed attuali ce anche il file \tc{fibonacci.txt} e facendo \sh{git diff} vediamo che le differenze rilevate sul file sono le stesse di prima proprio perche il modello di riferimento è lo stesso usato in precedenza che è lo stesso di ora!, in un certo senso sembra quasi che uno stesso file sia allo stesso tempo sia commited che modified, ma in realtà non è così perchè si va considerando non semplicemente il nome del file ma bensi il contenuto in esso, infatti \sh{git diff} mostra chiaramente in cosa sono diversi i file.
+%
 
 
 
