@@ -117,7 +117,7 @@ Possiamo proseguire con l'esercizio aggiungendo il file \tc{fibonacci.txt} alla 
 	(use "git restore <file>..." to discard changes in working directory)
 	modified:   matematica/fibonacci.txt
 \end{cmd}
-vediamo come lo stesso file risulti sia \ti{modified} che \ti{staged} ma ancora una volta non è così perchè quelli che si stanno considerando sono per Git due file diversi essendo che hanno un contenuto diverso. Facendo \sh{git diff} ora si vedono chiaramente le differenze tra la versione del file \ti{staged} e la versione del file \ti{modified} cioè quello nella working directory, con il comando \sh{git diff --staged} invece si vedono le differenze tra la versione del file \ti{committed} (quello nell'area repository) e la versione del file \ti{modified}, ancora, quello nella working directory, per completezza lascio sotto i due output.
+vediamo come lo stesso file risulti sia \ti{modified} che \ti{staged} ma ancora una volta non è così perchè quelli che si stanno considerando sono per Git due file diversi essendo che hanno un contenuto diverso. Facendo \sh{git diff} ora si vedono chiaramente le differenze tra la versione del file \ti{staged} e la versione del file \ti{modified} cioè quello nella working directory, con il comando \sh{git diff ----staged} invece si vedono le differenze tra la versione del file \ti{committed} (quello nell'area repository) e la versione del file \ti{modified}, ancora, quello nella working directory, per completezza lascio sotto i due output.
 \begin{cmd}
 	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
 	$ git diff
@@ -148,100 +148,59 @@ Possiamo procedere effettuando un commit, si può facilmente verificare che la v
 Con queste nozioni è possibile solo proseguire in avanti ovvero si possono continuare a creare versioni della cartella usando Git ma senza beneficiare di nessun "vantaggio", tuttavia questa prima parte era maggiormente pensata per dare un'idea del concetto di versione in Git.
 
 
+\section{I Branch}
+\label{sec:branch}
+Per comprendere il funzionamento dei branch in Git è utile introdurre una rappresentazione grafica della cronologia dei commit; a tal fine, il comando \sh{git log ----all ----oneline ----graph} consente di visualizzare la sequenza delle versioni sotto forma di una struttura ad albero, mettendo in evidenza come i commit siano collegati tra loro. 
+A seguire è riportato un output di esempio in cui praticamente tutte le versioni del progetto sono, per ora, allineate su un unico ramo.
 
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git log --all --oneline --graph
+	* 8f32569 (HEAD -> master) modificato il file giolitti
+	* 2877e77 modificato il file giolitti
+	* 987e4ba aggiornato file fibonacci
+	* 529e5f6 modificato il file euclide
+	* 6ae82da modificati i file in matematica
+	* dfcd8f9 initial commit
+\end{cmd}
 
+Si può osservare che ogni commit è identificato in modo univoco da un hash, utilizzando l'opzione \tc{----oneline} vengono mostrate solo le prime 7 cifre, ma l'identificativo completo è lungo 40 caratteri. Questo hash viene generato automaticamente da Git in base al contenuto del progetto e garantisce che ogni versione sia univoca, rendendo impossibile modificare retroattivamente un commit senza generarne uno nuovo.
+Nell'output compare anche il riferimento \tc{HEAD} che rappresenta un puntatore al commit attualmente selezionato, ovvero alla versione del progetto su cui si sta lavorando; nel caso mostrato, \tc{HEAD} coincide con il branch \tc{master} e punta all'ultimo commit. Utilizzando il comando \sh{git checkout <hash commit>} è possibile spostare \tc{HEAD} su un commit specifico rendendo quella versione la base di lavoro corrente e ,di conseguenza, i file presenti nella working directory, corrisponderanno allo stato salvato in quel commit. Una nota importante è che in genere i file \ti{modified} vengono trasportati da una versione all'altra e questo è un problema perchè si rischia di mischiare file appartenenti a versioni diverse, per evitare questa situazione si può usare il comando \sh{git stash --u} che praticamente crea una copia di tutti i file nella working directory e nella staging area e li mette in uno stack ti tipo LIFO (Last In, First Out), questo permette di cambiare versione avendo le zone di lavoro pulite. Per ripristinare l'ultimo stato memorizzato nello stack si usa \sh{git stash pop}, anche qui è importante precisare che il ripristino sarebbe meglio effettuarlo avendo working directory e staging area vuote e anche in corrispondenza dello stesso commit in cui era stato eseguito il salvataggio dello stato. Oltre a questo utilizzo, \tc{git stash} è usato anche per altre operazioni come ad esempio trasportare file modificati da un commit ad un altro (per fare confronti o qualsiasi altra operazione), a tal fine tornano utili i seguenti comandi: \sh{git stash list}, che mostra tutti i salvataggi presenti nello stack (ogni salvataggio è indicizzato con un indice assegnato in modo progressivo), \sh{git stash apply <indice>}, che ripristina uno specifico salvataggio nella posizione corrente e senza rimuoverlo dallo stack, e \sh{git stash drop <indice>}, che elimina un elemento dallo stack. 
 
+A questo punto, essendo possibile spostarsi tra diverse versioni, si può osservare un comportamento fondamentale di Git. Se si seleziona un commit precedente, si modificano i file e si crea un nuovo commit, la cronologia non prosegue semplicemente in avanti, ma si genera una nuova linea di sviluppo parallela. Si consideri il seguente output, ottenuto dopo aver effettuato un commit a partire dal \tc{529e5f6}:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti ((5a0319a...))
+	$ git log --all --oneline --graph
+	* 5a0319a (HEAD) aggiunto aroldi a storia
+	| * 8f32569 (master) modificato il file giolitti
+	| * 2877e77 modificato il file giolitti
+	| * 987e4ba aggiornato file fibonacci
+	|/
+	* 529e5f6 modificato il file euclide
+	* 6ae82da modificati i file in matematica
+	* dfcd8f9 initial commit
+\end{cmd}
 
+In questo caso si osserva chiaramente la presenza di due rami: uno principale, identificato dal puntatore \tc{master}, e uno secondario, su cui si trova attualmente \tc{HEAD}. Il nuovo commit non è stato aggiunto in coda alla linea principale, ma ha dato origine a un nuovo percorso nella cronologia, questo accade perché ogni commit contiene un riferimento al commit precedente e creando un commit a partire da una versione passata si costruisce una nuova sequenza indipendente che si sviluppa parallelamente a quella già esistente.
+Si nota inoltre che \tc{HEAD} non punta più a \tc{master}, ma direttamente a un commit, questa situazione è nota come \ti{detached HEAD} e indica che non si sta lavorando su un branch, ma su un commit specifico. Per rendere questa nuova linea di sviluppo persistente e facilmente accessibile (altrimenti sarebbe necessario usare ogni volta hash dell'utimo commit) è possibile creare un branch usando il comando \sh{git branch <nome del branch>}, una volta creato è possibile spostarsi su di esso e continuare lo sviluppo in modo strutturato, mantenendo separate le diverse linee di evoluzione del progetto. A seguire output di \sh{git log ----all ----oneline ----graph} dopo aver "creato" il nuovo branch e aver spostato \tc{HEAD} su esso.
+\begin{cmd}
+snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (mattia)
+$ git log --all --oneline --graph
+	* 5a0319a (HEAD -> mattia) aggiunto aroldi a storia
+	| * 8f32569 (master) modificato il file giolitti
+	| * 2877e77 modificato il file giolitti
+	| * 987e4ba aggiornato file fibonacci
+	|/
+	* 529e5f6 modificato il file euclide
+	* 6ae82da modificati i file in matematica
+	* dfcd8f9 initial commit
+\end{cmd}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Lo sviluppo tramite branch rappresenta una delle caratteristiche fondamentali di Git e può essere sfruttato in diversi contesti. Uno dei principali è la collaborazione tra più persone sullo stesso archivio: in questo caso, una prassi comune consiste nell'utilizzare un branch dedicato per ciascun collaboratore, permettendo a ognuno di sviluppare in modo indipendente senza interferire direttamente con il lavoro altrui. Le modifiche introdotte nei vari branch vengono poi progressivamente integrate tra loro attraverso operazioni di unione (\ti{merge}), fino a confluire nel ramo principale, generalmente identificato con \tc{master} (o \tc{main} nelle configurazioni più recenti), che rappresenta la versione di riferimento del progetto.
 %
-%La cartella sottoposta a versionamento, allo stato attuale, non contiene file (tutto ciò che è nella cartella \tc{.git} non è da intendersi come effettivo contenuto, sono file che solo Git utilizza per gestire il versionamento), creiamo quindi alcuni file, in questo esempio la struttura usata è quella riportata in figura \ref{fig:esempio-struttura-Git}, il contenuto dei file \tc{.txt} è semplice testo multiriga mentre il file \tc{.md} è strutturato nel seguente modo:
-%\begin{cmd}
-%	# matematica
-%	- fibonacci
-%	- euclide
-%	
-%	# storia
-%	- giolitti
-%\end{cmd}
 %
-%\begin{figtree}{Struttura della cartella \tc{progetto-esempio} versionata con Git}{esempio-struttura-Git}
-%	\dirtree{%
-%		.1 progetto-esempio.
-%		.2 matematica.
-%		.3 fibonacci.txt.
-%		.3 euclide.txt.
-%		.2 storia.
-%		.3 giolitti.txt.
-%		.2 indice.md.
-%	}
-%\end{figtree}
-%
-%Ora eseguiamo il comando \sh{git add *} e subito dopo \sh{git commit -m "initial commit"}, la sequenza di questi due comandi ha creato la prima versione della cartella \tc{progetto-esempio}, ovvero il primo commit che per convenzione è sempre chiamato \ti{initial commit}, ora i file presenti nella cartella, che possono essere riportati a modi elenco eseguendo il comando \sh{ll}, sono tutti file committed. Proviamo a modificare il file \tc{euclide.txt} andando ad aggiungere al testo la parola "Teorema",  e il file \tc{fibonacci.txt} andando a eliminare una parola qualsiasi.
-%con queste operazioni i file passano dallo stato committed allo stato modified e eseguendo il comando \tc{git diff} è possibile visualizzare le differenze tra i file committed e i file modified (cioè quelli prima committed e poi passati a modified), per questo esempio l'output è il seguente:
-%\begin{cmd}
-%snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
-%	$ git diff
-%	warning: in the working copy of 'matematica/euclide.txt', LF will be replaced by CRLF the next time Git touches it
-%	warning: in the working copy of 'matematica/fibonacci.txt', LF will be replaced by CRLF the next time Git touches it
-%	diff --git a/matematica/euclide.txt b/matematica/euclide.txt
-%	index fd8eea5..c46511f 100644
-%	--- a/matematica/euclide.txt
-%	+++ b/matematica/euclide.txt
-%	@@ -1 +1,2 @@
-%	Euclide padre della geometria.
-%	+Teorema
-%	diff --git a/matematica/fibonacci.txt b/matematica/fibonacci.txt
-%	index 5f8a94b..ebd3924 100644
-%	--- a/matematica/fibonacci.txt
-%	+++ b/matematica/fibonacci.txt
-%	@@ -1 +1 @@
-%	-Fibonacci matematico Pisano. La successione aurea.
-%	+Fibonacci matematico. La successione aurea.
-%\end{cmd}
-%
-%(magari descrivi un po a cosa diavolo fanno riferimento tutti i messaggi prima di +Teorema che è la cosa fondamentale da vedere). Oltre a rilevare la modifica Git mostra che le modifiche apportate non sono tracciate nella prossima versione, infatti digitando \tc{git status -u} l'output è il seguente:
-%\begin{cmd}
-%	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
-%	$ git status
-%	On branch master
-%	Changes not staged for commit:
-%	(use "git add <file>..." to update what will be committed)
-%	(use "git restore <file>..." to discard changes in working directory)
-%	modified:   matematica/euclide.txt
-%	modified:   matematica/fibonacci.txt
-%	
-%	no changes added to commit (use "git add" and/or "git commit -a")
-%\end{cmd}
-%in pratica Git fa presente che i file \tc{euclide.txt} e \tc{fibonacci.txt} sono stati modificati ma attualmente il loro contenuto non è ancora stato considerato per essere inserito nel successivo commit ovvero lo stato del file è modified e non staged. Se nel prossimo commit vogliamo salvare lo stato attuale del file \tc{euclide.txt} si usa il comando \sh{git add matematica/euclide.txt}, facendo così il file passa allo stato staged ed eseguendo nuovamente il comando \sh{git status -u} si vede che ora l'unico nuovo file che costituirà la successiva versione è il file \tc{euclide.txt}, tutti gli altri presenti saranno identici a quelli committed e modified attuali (attenzione quelli modified ma nella versione committed!). Facciamo un commit, quindi \sh{git commit -m "modificato il file euclide"}, adesso il contenuto della working directory è costituito dai file committed ma anche dai file modified, in questo caso \tc{fibonacci.txt}, la cui modifica è iniziata un commit precedente, la versione di riferimento per il file è sempre e comunque però la stessa, infatti tra i file committed attuali ce anche il file \tc{fibonacci.txt} e facendo \sh{git diff} vediamo che le differenze rilevate sul file sono le stesse di prima proprio perche il modello di riferimento è lo stesso usato in precedenza che è lo stesso di ora!, in un certo senso sembra quasi che uno stesso file sia allo stesso tempo sia commited che modified, ma in realtà non è così perchè si va considerando non semplicemente il nome del file ma bensi il contenuto in esso, infatti \sh{git diff} mostra chiaramente in cosa sono diversi i file.
-%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%\section{Merge dei branch}
+%\label{sec:merge-branch}
 
 
 
