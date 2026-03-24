@@ -197,22 +197,135 @@ $ git log --all --oneline --graph
 \end{cmd}
 
 Lo sviluppo tramite branch rappresenta una delle caratteristiche fondamentali di Git e può essere sfruttato in diversi contesti. Uno dei principali è la collaborazione tra più persone sullo stesso archivio: in questo caso, una prassi comune consiste nell'utilizzare un branch dedicato per ciascun collaboratore, permettendo a ognuno di sviluppare in modo indipendente senza interferire direttamente con il lavoro altrui. Le modifiche introdotte nei vari branch vengono poi progressivamente integrate tra loro attraverso operazioni di unione (\ti{merge}), fino a confluire nel ramo principale, generalmente identificato con \tc{master} (o \tc{main} nelle configurazioni più recenti), che rappresenta la versione di riferimento del progetto.
-%
-%
-%\section{Merge dei branch}
-%\label{sec:merge-branch}
 
 
 
+\section{Merge dei branch}
+\label{sec:merge-branch}
 
+Dopo aver introdotto il concetto di branch, è possibile analizzare come e perché questi possano essere uniti, tale operazione prende il nome di \ti{merge} tra branch. Nella maggior parte dei casi, il merge viene utilizzato per integrare un branch secondario (ad esempio sviluppato per una nuova funzionalità) all'interno del branch principale.
 
+Il comando di base è \sh{git merge <branch>}: questa operazione integra i contenuti del branch specificato all'interno del branch corrente (ricordando che il nome di un branch rappresenta un puntatore all'ultimo commit di una determinata linea di sviluppo). 
+L'integrazione può avvenire in due modi:
+\begin{itemize}
+	\item \tb{Diretta}: quando le modifiche riguardano parti diverse dei file, il merge viene eseguito automaticamente senza richiedere intervento.
+	\item \tb{Conflittuale}: quando le modifiche interessano le stesse parti di uno o più file, è necessario un intervento manuale.
+\end{itemize}
+Il caso diretto è immediato, quello conflittuale richiede qualche attenzione in più, infatti, quando due branch modificano lo stesso punto di un file (ad esempio la stessa riga), Git non è in grado di stabilire quale versione mantenere e richiede quindi una risoluzione manuale. In questi casi Git evidenzia il conflitto direttamente all'interno dei file usando marcatori speciali che delimitano le diverse versioni in conflitto, l'utente deve modificare il file scegliendo cosa mantenere (una delle due versioni oppure una combinazione di entrambe), rimuovere i marcatori e salvare il risultato finale. Corretti i file, è necessario aggiungere questi alla staging area ed effettuare un commit che rappresenta il completamento del merge; i file non coinvolti nei conflitti vengono invece integrati automaticamente.
 
+Vediamo ora un esempio che mostra entrambe le situazioni. L'albero di partenza è il seguente:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (giorgia)
+	$ git log --all --oneline --graph
+	* ffbb618 (HEAD -> giorgia) aggiuta cartella musica e Verdi
+	| * 33f6bce (master) modificato il file euclide
+	| * 8f32569 modificato il file giolitti
+	| * 2877e77 modificato il file giolitti
+	| * 987e4ba aggiornato file fibonacci
+	|/
+	| * 1ab128a (mattia) modificato file euclide
+	| * 5a0319a aggiunto aroldi a storia
+	|/
+	* 529e5f6 modificato il file euclide
+	* 6ae82da modificati i file in matematica
+	* dfcd8f9 initial commit
+\end{cmd}
 
+Sono presenti tre branch: uno principale, \tc{master}, e due secondari, \tc{mattia} e \tc{giorgia}. 
+Il contenuto del file \tc{euclide.txt} nei vari branch è il seguente:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (mattia)
+	$ cat matematica/euclide.txt
+	Euclide padre della geometria.
+	Teorema
+	Atene.
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (mattia)
+	$ git checkout master
+	Switched to branch 'master'
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ cat matematica/euclide.txt
+	Euclide padre della geometria.
+	Teorema
+	Platone
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (mattia)
+	$ git checkout giorgia
+	Switched to branch 'giorgia'
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (giorgia)
+	$ cat matematica/euclide.txt
+	Euclide padre della geometria.
+	Teorema
+\end{cmd}
 
+Nel branch \tc{giorgia} è inoltre presente una cartella aggiuntiva \tc{musica} contenente \tc{Verdi.txt}. Si tenta ora un merge tra \tc{master} e \tc{mattia}, è naturale aspettarsi un conflitto sul file \tc{euclide.txt} in quanto modificato nello stesso punto:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git merge mattia
+	Auto-merging matematica/euclide.txt
+	CONFLICT (content): Merge conflict in matematica/euclide.txt
+	Automatic merge failed; fix conflicts and then commit the result.
+	
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master|MERGING)
+\end{cmd}
 
+durante questa fase, il repository si trova in uno stato intermedio indicato come \tc{(master|MERGING)}, che segnala la presenza di un merge non ancora completato, il file in conflitto appare nel seguente modo:
+\begin{cmd}
+	<<<<<<< HEAD
+	Platone
+	=======
+	Atene.
+	>>>>>>> mattia
+\end{cmd}
 
+i marcatori indicano:
+\begin{itemize}
+	\item \tc{HEAD}: versione del branch corrente
+	\item \tc{mattia}: versione del branch da integrare
+\end{itemize}
 
+Si può quindi risolvere il conflitto mantenendo entrambe le versioni, modificando il file e rimuovendo i marcatori:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master|MERGING)
+	$ cat matematica/euclide.txt
+	Euclide padre della geometria.
+	Teorema.
+	Platone.
+	Atene.
+\end{cmd}
 
+si eseguono \sh{git add *} e \sh{git commit}, completando il merge. 
+Il risultato è un nuovo commit che unisce le due linee di sviluppo. Successivamente, si può effettuare il merge del branch \tc{giorgia} in \tc{master}; in questo caso non si verificano conflitti, poiché le modifiche riguardano file diversi o non sovrapposti:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git merge giorgia
+	Merge made by the 'ort' strategy.
+	musica/Verdi.txt | 1 +
+	1 file changed, 1 insertion(+)
+	create mode 100644 musica/Verdi.txt
+\end{cmd}
+
+in questo caso Git esegue automaticamente l'integrazione e crea direttamente un commit di merge (eventualmente aprendo l'editor per il messaggio). Al termine delle operazioni, il grafo dei commit mostra chiaramente l'unione delle diverse linee di sviluppo:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/appunti (master)
+	$ git log --all --oneline --graph
+	*   30d99d9 (HEAD -> master) merge master-giorgia
+	|\
+	| * ffbb618 (giorgia) aggiuta cartella musica e Verdi
+	* |   3183e7f fix merge master-mattia
+	|\ \
+	| * | 1ab128a (mattia) modificato file euclide
+	| * | 5a0319a aggiunto aroldi a storia
+	| |/
+	* | 33f6bce modificato il file euclide
+	* | 8f32569 modificato il file giolitti
+	* | 2877e77 modificato il file giolitti
+	* | 987e4ba aggiornato file fibonacci
+	|/
+	* 529e5f6 modificato il file euclide
+	* 6ae82da modificati i file in matematica
+	* dfcd8f9 initial commit
+\end{cmd}
+
+L'unico vero branch rimasto è il \tc{master}, gli altri due continuano ad esistere, infatti eseguendo il comando \sh{git branch ----list} compaiono nella lista ma concettualmente non ha molto senso tenerli (diciamo che molto dipende dai casi di utilizzo), per eliminarli si usa il comando \sh{git branch -d <nome del branch>}.
 
 
 
