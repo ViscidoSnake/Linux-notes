@@ -1,3 +1,59 @@
 \chapter{GitHub}
 \label{chapter:github}
+In questo capitolo viene trattata la piattaforma \ti{GitHub} e, più in particolare, la sua integrazione con il software Git, questo binomio è oggi ampiamente diffuso nello sviluppo software, soprattutto nel contesto open source. Come visto nel capitolo \ref{chapter:git}, Git è uno strumento per il versionamento dei file e fornisce meccanismi che si prestano naturalmente allo sviluppo collaborativo, tuttavia, Git opera in modo completamente locale e non fornisce direttamente strumenti per la condivisione e la sincronizzazione dei repository tra più utenti. In assenza di una piattaforma remota, la condivisione di un archivio richiederebbe infatti il trasferimento manuale dei dati tra macchine diverse (ad esempio tramite dispositivi fisici), rendendo difficile gestire in modo efficace il lavoro collaborativo.
+
+GitHub nasce proprio per risolvere queste problematiche offrendo un'infrastruttura online che consente di ospitare repository Git e di renderli accessibili tramite rete. 
+In questo modo la collaborazione tra più utenti diventa una caratteristica pienamente supportata grazie a strumenti che permettono la sincronizzazione delle modifiche, la gestione dei contributi e il coordinamento dello sviluppo.
+
+
+\section{Repository remoti}
+\label{sec:repository-remote}
+Con il termine \ti{repository remoto} si indica, in modo generale, un archivio di file che si trova su una macchina diversa rispetto a quella su cui si sta lavorando. L'utilizzo di repository remoti risulta particolarmente utile in diversi scenari: da un lato permette di condividere un progetto tra più macchine o utenti, dall'altro consente di mantenere una copia di sicurezza dell'archivio in una posizione separata.
+
+Nell'integrazione tra Git e GitHub, il repository remoto rappresenta una versione del repository Git ospitata su un server online, ovvero GitHub, e il suo scopo principale è quello di permettere la collaborazione tra più utenti. La condivisione, in questo contesto, non si limita alla semplice consultazione o al download dell'archivio, ma comprende anche la possibilità di modificarlo e aggiornare la versione condivisa. In termini operativi, il flusso di lavoro tipico prevede che un utente scarichi una copia del repository, apporti modifiche localmente utilizzando Git e successivamente invii tali modifiche al repository remoto, aggiornandone il contenuto. Sebbene questo processo possa apparire semplice, nella pratica emergono problematiche non banali, come la gestione di modifiche simultanee da parte di più utenti. 
+Git e GitHub forniscono strumenti specifici per affrontare queste situazioni, evitando la perdita di dati e garantendo che le diverse versioni del progetto vengano integrate in modo coerente.
+
+
+
+\section{Creare e gestire repository remoti su GitHub}
+\label{sec:creare-repository-remoti-su-gitHub}
+
+Per creare una repository remota su GitHub è sufficiente creare un account e utilizzare il pulsante "New". 
+Successivamente è possibile specificare il nome della repository e la tipologia, \ti{public} o \ti{private}: nel primo caso la repository è accessibile pubblicamente, mentre nel secondo è visibile e modificabile solo dagli utenti autorizzati, di default lo stesso che ha creato la repository. Una volta completata la creazione GitHub fornisce un URL che identifica univocamente la repository e che rappresenta l'elemento principale per interagirvi tramite Git. Sebbene GitHub metta a disposizione anche un editor web per creare, modificare ed eliminare file direttamente dal browser, è consigliabile limitarne l'utilizzo, soprattutto nelle fasi iniziali, in quanto può introdurre modifiche non sincronizzate con il repository locale e rendere meno chiaro il flusso di lavoro.
+
+Per iniziare a lavorare sulla repository remota, è possibile clonarla in locale tramite il comando \sh{git clone <URL> <percorso>}, questo crea una copia completa della repository remota all'interno di una cartella locale, includendo l'intera cronologia dei commit; nel caso di repository private potrebbe essere richiesto di effettuare l'autenticazione prima di completare l'operazione. Dopo il clone, il repository locale è già configurato per comunicare con quello remoto: Git crea automaticamente un riferimento chiamato \tc{origin}, che memorizza l'URL della repository remota. Banalmente, avendo l'URL, Git permette, attraverso comandi specifici, di effettuare richieste web al server GitHub che ospita la repository remota. Per verificare i repository remoti associati, è possibile utilizzare il comando \sh{git remote -v} (di possono configurare più repository remoti per uno stesso repository locale ma questa è un applicazione abbastanza avanzata) che mostra gli alias configurati e i relativi URL (gli alias sarebbero i nomi associati agli URL), in questo caso di esempio si dovrebbero vedere solo URL.
+
+Nel caso in cui si voglia collegare manualmente una repository locale a una remota, è possibile utilizzare il comando:
+\sh{git remote add <alias> <URL>}
+
+Questa operazione è necessaria solo se la repository locale non è stata ottenuta tramite \ti{clone}.
+
+A questo punto, il repository locale e quello remoto risultano collegati, rendendo possibile sincronizzare le modifiche tra i due attraverso i comandi che verranno introdotti nella sezione successiva.
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%
+%
+%\section{Creare e gestire repository remoti su GitHub}
+%\label{sec:creare-repository-remoti-su-gitHub}
+%Per creare una repository remota su GitHub è sufficiente creare un account e poi premere il pulsante "New", a quel punto dopo aver selezionato il nome e la tipologia (\ti{pubblic} o \ti{private}, senza distinguere ora la differenza tra le due, diciamo che la seconda è più indicata perchè rende la nuova repository remota accessibile e manipolabile solo dallo stesso utente che la ha creata), la repository remota è stata creata e tutto ciò che serve per interagirci è il suo URL (che si trova nella schermata che si apre subito dopo), teoricamente senza URL la repository dovrebbe risultare non modificabile tuttavia GitHub offre un editor che permette di aggiugere modificare ed eliminare file, nonostante sia una funzione utile è meglio non usarla in quanto rischia di creare situazioni non facilmente gestibili, soprattutto all'inizio. Avendo copiato URL si apre Git Bash e si digita il comando \sh{git clone < URL > < percorso nuova cartella >}
+%in pratica questo clona la repository remota in una nuova cartella presente invece nel ssitema e specificata dal percorso inserito nel comando, se la repository remota è di tipo \ti{private} il comando \tc{clone} richiedere di effetuare il login a GitHub prima di completare l'operazione.
+%
+%A questo punto le versioni dell'archivio nella macchina e la stessa di quella su GitHub, il punto è ora fare in modo tale che le modifiche apportate a questo nella directory locale siano poi trasmesse alla repository remota. A tale scopo Git prevede particolari comandi, i quali però, per funzionare, hanno bisogno di una configurazione (come è chiaro aspettarsi, insomma l'operazione di \ti{clone} è solo un dowload di dati quindi Git non sa ancora a quale repository remota comunicare i cambiamenti che stanno avvenendo nella repository locale), bisogna impostare una sorta di variabile che contiene URL della repository remota in modo che poi si possano effetuare semplici chiamate web, per fare ciò si usa il comando \sh{git remote add < alias > < URL > }, ora attenzione perchè in realtà nelle versioni recenti di Git, una volta fatto il \ti{clone}, Git crea in automatico questa "variabile" e la chiama "origin" pertanto non è necessario effettuare il comando \tc{git remote add}, ad ogni modo, per vedere se la repository locale è configurata per avere connessioni con repository remote basta eseguire il comando \sh{git remote -v} che mostra alias e URL che Git utilizzerà per effetuare le varie operazioni di aggiornamento con la versione remota dell'archivio.
+%
+%
+
+
+
 
