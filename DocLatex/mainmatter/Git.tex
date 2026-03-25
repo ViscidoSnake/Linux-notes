@@ -1,14 +1,18 @@
-\chapter{Git e GitHub}
-\label{chapter:git-e-github}
-In questo capitolo vengono introdotti due strumenti fondamentali nello sviluppo software moderno: \tb{Git} e \tb{GitHub}. Essi sono ampiamente utilizzati, soprattutto nel contesto open source, dove per definizione l'intera community è invitata a contribuire attivamente ai progetti.
+%\chapter{Git e GitHub}
+%\label{chapter:git-e-github}
+%In questo capitolo vengono introdotti due strumenti fondamentali nello sviluppo software moderno: \tb{Git} e \tb{GitHub}. Essi sono ampiamente utilizzati, soprattutto nel contesto open source, dove per definizione l'intera community è invitata a contribuire attivamente ai progetti.
+%
+%Sebbene spesso vengano utilizzati in modo coordinato, è importante distinguerne chiaramente i ruoli. \tb{Git è un sistema di controllo di versione distribuito, che consente di tracciare nel tempo le modifiche ai file, mantenendo una cronologia completa del progetto}. In altre parole, Git permette di effettuare il \ti{versioning}, rendendo possibile tornare a versioni precedenti, confrontare modifiche e lavorare in parallelo su diverse funzionalità. \textbf{GitHub}, invece, è una \tb{piattaforma online che consente di ospitare repository Git su un server remoto, rendendoli accessibili tramite Internet}. Questo facilita la collaborazione tra più sviluppatori, offrendo strumenti aggiuntivi come la gestione delle modifiche, il tracciamento dei problemi e la revisione del codice. Mentre le funzionalità di hosting offerte da GitHub possono essere sostituite da altri servizi simili (o anche da server privati), il ruolo di \tb{Git come sistema di versionamento rimane centrale ed è difficilmente rimpiazzabile}.
+%
+%Nei paragrafi successivi verranno analizzati separatamente Git e GitHub, partendo dai concetti fondamentali fino ad arrivare al loro utilizzo combinato.
+\chapter{Git}
+\label{chapter:git}
+In questo capitolo viene trattato il software di controllo di versione \ti{Git}, l'interesse verso questo strumento nasce sia dall'utilizzo di sistemi Linux, nei quali molti software vengono distribuiti tramite \ti{repository Git}, sia dal fatto che Git rappresenta uno strumento fondamentale nello sviluppo software moderno.
 
-Sebbene spesso vengano utilizzati in modo coordinato, è importante distinguerne chiaramente i ruoli. \tb{Git è un sistema di controllo di versione distribuito, che consente di tracciare nel tempo le modifiche ai file, mantenendo una cronologia completa del progetto}. In altre parole, Git permette di effettuare il \ti{versioning}, rendendo possibile tornare a versioni precedenti, confrontare modifiche e lavorare in parallelo su diverse funzionalità. \textbf{GitHub}, invece, è una \tb{piattaforma online che consente di ospitare repository Git su un server remoto, rendendoli accessibili tramite Internet}. Questo facilita la collaborazione tra più sviluppatori, offrendo strumenti aggiuntivi come la gestione delle modifiche, il tracciamento dei problemi e la revisione del codice. Mentre le funzionalità di hosting offerte da GitHub possono essere sostituite da altri servizi simili (o anche da server privati), il ruolo di \tb{Git come sistema di versionamento rimane centrale ed è difficilmente rimpiazzabile}.
+Il capitolo è organizzato in sezioni e verrà progressivamente ampliato con l'introduzione di nuovi concetti seguendo un approccio incrementale basato sull'utilizzo diretto di Git.
 
-Nei paragrafi successivi verranno analizzati separatamente Git e GitHub, partendo dai concetti fondamentali fino ad arrivare al loro utilizzo combinato.
-
-
-\section{Git}
-\label{sec:git}
+\section{Il concetto di versione in Git}
+\label{sec:il-concetto-di-versione-in-git}
 \tb{Il \ti{versioning} dei file è una pratica che permette di mantenere una cronologia delle modifiche rendendo possibile in qualsiasi momento risalire a uno stato precedente dei file}. Un modo rudimentale per ottenere questo risultato consiste nel creare copie complete dell'intero archivio ogni volta che vengono effettuate delle modifiche e conservarle per eventuali ripristini futuri. 
 Sebbene questo approccio possa sembrare inizialmente funzionale, presenta diverse limitazioni, in primo luogo la dimensione dell'archivio cresce rapidamente: più i file sono grandi, più le copie richiedono spazio di archiviazione, in secondo luogo, in un contesto condiviso tra più utenti, avere molte copie indipendenti (non collegate tra loro) rende difficile tracciare le modifiche effettuate e comprendere come il progetto si sia evoluto nel tempo. Infine, anche la sincronizzazione su sistemi cloud risulta inefficiente, specialmente in presenza di archivi di grandi dimensioni.
 
@@ -200,8 +204,8 @@ Lo sviluppo tramite branch rappresenta una delle caratteristiche fondamentali di
 
 
 
-\section{Merge dei branch}
-\label{sec:merge-branch}
+\section{Merge}
+\label{sec:merge}
 
 Dopo aver introdotto il concetto di branch, è possibile analizzare come e perché questi possano essere uniti, tale operazione prende il nome di \ti{merge} tra branch. Nella maggior parte dei casi, il merge viene utilizzato per integrare un branch secondario (ad esempio sviluppato per una nuova funzionalità) all'interno del branch principale.
 
