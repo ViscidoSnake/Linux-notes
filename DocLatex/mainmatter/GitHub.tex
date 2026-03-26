@@ -18,24 +18,97 @@ Git e GitHub forniscono strumenti specifici per affrontare queste situazioni, ev
 \section{Creare e gestire repository remoti su GitHub}
 \label{sec:creare-repository-remoti-su-gitHub}
 
-Per creare una repository remota su GitHub è sufficiente creare un account e utilizzare il pulsante "New". 
+Per creare una repository remota su GitHub è sufficiente andare sulla pagina web di GitHub e creare un account, un volta nell'area personale basta premere il pulsante "New". 
 Successivamente è possibile specificare il nome della repository e la tipologia, \ti{public} o \ti{private}: nel primo caso la repository è accessibile pubblicamente, mentre nel secondo è visibile e modificabile solo dagli utenti autorizzati, di default lo stesso che ha creato la repository. Una volta completata la creazione GitHub fornisce un URL che identifica univocamente la repository e che rappresenta l'elemento principale per interagirvi tramite Git. Sebbene GitHub metta a disposizione anche un editor web per creare, modificare ed eliminare file direttamente dal browser, è consigliabile limitarne l'utilizzo, soprattutto nelle fasi iniziali, in quanto può introdurre modifiche non sincronizzate con il repository locale e rendere meno chiaro il flusso di lavoro.
 
-Per iniziare a lavorare sulla repository remota, è possibile clonarla in locale tramite il comando \sh{git clone <URL> <percorso>}, questo crea una copia completa della repository remota all'interno di una cartella locale, includendo l'intera cronologia dei commit; nel caso di repository private potrebbe essere richiesto di effettuare l'autenticazione prima di completare l'operazione. Dopo il clone, il repository locale è già configurato per comunicare con quello remoto: Git crea automaticamente un riferimento chiamato \tc{origin}, che memorizza l'URL della repository remota. Banalmente, avendo l'URL, Git permette, attraverso comandi specifici, di effettuare richieste web al server GitHub che ospita la repository remota. Per verificare i repository remoti associati, è possibile utilizzare il comando \sh{git remote -v} (di possono configurare più repository remoti per uno stesso repository locale ma questa è un applicazione abbastanza avanzata) che mostra gli alias configurati e i relativi URL (gli alias sarebbero i nomi associati agli URL), in questo caso di esempio si dovrebbero vedere solo URL.
+Per iniziare a lavorare sulla repository remota, è possibile clonarla in locale tramite il comando \sh{git clone <URL> <cartella>}, questo crea una copia completa della repository remota all'interno di una cartella locale (il cui percorso è da specificare in \tc{<cartella>} ); nel caso di repository private potrebbe essere richiesto di effettuare l'autenticazione prima di completare l'operazione. Dopo il clone, il repository locale è già configurato per comunicare con quello remoto, infatti Git crea automaticamente un riferimento chiamato \ti{origin}, che memorizza l'URL della repository remota. Banalmente, avendo l'URL, Git permette, attraverso comandi specifici, di effettuare richieste web al server GitHub che ospita la repository remota. Per verificare i repository remoti associati, è possibile utilizzare il comando \sh{git remote -v} (si possono configurare più repository remoti per uno stesso repository locale ma questa è un applicazione abbastanza avanzata) che mostra gli alias configurati e i relativi URL (gli alias sarebbero i nomi associati agli URL), in questo caso di esempio si dovrebbe un output di questo tipo:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/esempio2
+	$ git remote -v
+	origin  https://github.com/ViscidoSnake/esempio2.git (fetch)
+	origin  https://github.com/ViscidoSnake/esempio2.git (push)
+\end{cmd}
 
-Nel caso in cui si voglia collegare manualmente una repository locale a una remota, è possibile utilizzare il comando:
-\sh{git remote add <alias> <URL>}
+cioè un solo alias, \ti{origin}, che Git utilizza per effettuare le operazioni di \ti{push} e \ti{fetch}, operazioni fondamentali per mantenere l'aggiornamento tra repository remoto e repository locale. In parole molto semplici l'operazione di \ti{push} carica nella repository remota i commit avvenuti nella repository locale mentre il \ti{fetch} serve per scaricare nella cartella locale i cambiamenti e riferimenti Git dalla repository remota verso quella locale. Le modalità con cui si possono caricare update avvenuti nella cartella locale sono molti e tutti attraverso il comando \tc{git push <opzioni>}, il modo in assoluto più semplice è quello di aggiungere nuovi commit, senza quindi cambiare radicalmente la struttura di partenza del repository remoto (questo accade se si inizia ad usare \tc{git reset}), per fare questo si usa il comando \sh{git push <alias> <branch>} dove appunto \tc{alias} rappresenta un URL che punta alla repository remota e \tc{branch} sarebbe il nome del branch locale da caricare, questa operazione non carica semplicemente l'ultimo commit ma tutti gli ultimi commit avvenuti sul particolare branch. Volendo provare, una volta effettuato il clone, basta creare un file e poi fare, generare il primo commit, e poi fare il push nella repository remota, aprendo GitHub dovrebbe comparire il nuovo file. Oltre a vedere il file è interessante guardare anche l'output del comando push:
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/esempio2 (main)
+	$ git push origin main
+	Enumerating objects: 3, done.
+	Counting objects: 100% (3/3), done.
+	Writing objects: 100% (3/3), 221 bytes | 221.00 KiB/s, done.
+	Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+	To https://github.com/ViscidoSnake/esempio2.git
+	* [new branch]      main -> main
+\end{cmd}
 
-Questa operazione è necessaria solo se la repository locale non è stata ottenuta tramite \ti{clone}.
+dopo le prime righe che indicano quanti file sono stati caricati e la dimensione di essi, l'ultima riga informa che è stato creato un nuovo branch, questa volta remoto, che porta lo stesso nome del branch appena \ti{pushato} (in realtà, come poi si vede anche dal log, il nome del branch remoto creato ha come prefisso l'alias che la repository locale ha usato per il push) e in più i due sono perfettamente allineati cioè quindi le versioni dell'archivio locale e dell'archivio remoto sono identiche. Eseguendo \sh{git log ----all ----branch} è possibile vedere graficamente quanto detto. Se si continuano a creare commit in locale oppure anche creare branch, fin tanto che non si effettua un push nella repository remota, questa resta non sincronizzata e ciò lo si può vedere dal grafo generato da \sh{git log ----all ----branch} dove il branch remoto resta indietro rispetto a quello locale, in riferimento all'esempio di prima:
 
-A questo punto, il repository locale e quello remoto risultano collegati, rendendo possibile sincronizzare le modifiche tra i due attraverso i comandi che verranno introdotti nella sezione successiva.
+\begin{cmd}
+	snake@DESKTOP-VGK2IC9 MINGW64 /x/esempio2 (main)
+	$ git log --all --graph
+	* commit 4c8f7df447945c27939e3e9a2720ad04499958a1 (HEAD -> main)
+	| Author: Elia <Elia>
+	| Date:   Thu Mar 26 09:32:14 2026 +0100
+	|
+	|     modificato file listaSpesa, aggiunte
+	|
+	* commit e194fd454fa71e2f2c111553acf8c37a993f2b06
+	| Author: Elia <Elia>
+	| Date:   Thu Mar 26 09:30:07 2026 +0100
+	|
+	|     modificato file note, aggiunto pollo
+	|
+	* commit ce5262c27d169420db89519b0ffab163e0e8ce20
+	| Author: Elia <Elia>
+	| Date:   Thu Mar 26 09:29:11 2026 +0100
+	|
+	|     aggiunto file note
+	|
+	* commit dfa0d0106007b2cd13181e664ecacc7cda569b84 (origin/main)
+	Author: Elia <Elia>
+	Date:   Thu Mar 26 09:12:08 2026 +0100
+	
+	initial commit
+\end{cmd}
+
+il branch remoto 
 
 
 
-
-
-
-
+%
+%
+%
+%\section{Creare e gestire repository remoti su GitHub}
+%\label{sec:creare-repository-remoti-su-gitHub}
+%
+%Per creare una repository remota su GitHub è sufficiente creare un account e utilizzare il pulsante "New". 
+%Successivamente è possibile specificare il nome della repository e la tipologia, \ti{public} o \ti{private}: nel primo caso la repository è accessibile pubblicamente, mentre nel secondo è visibile e modificabile solo dagli utenti autorizzati.
+%
+%Una volta completata la creazione, GitHub fornisce un URL che identifica univocamente la repository e che rappresenta l'elemento principale per interagirvi tramite Git.
+%
+%Sebbene GitHub metta a disposizione anche un editor web per creare, modificare ed eliminare file direttamente dal browser, è consigliabile limitarne l'utilizzo, soprattutto nelle fasi iniziali, in quanto può introdurre modifiche non sincronizzate con il repository locale e rendere meno chiaro il flusso di lavoro.
+%
+%Per iniziare a lavorare sulla repository remota, è possibile clonarla in locale tramite il comando:
+%\sh{git clone <URL> <percorso>}
+%
+%Questo comando crea una copia completa della repository remota all'interno di una cartella locale, includendo l'intera cronologia dei commit. 
+%Nel caso di repository private, potrebbe essere richiesto di effettuare l'autenticazione prima di completare l'operazione.
+%
+%Dopo il clone, il repository locale è già configurato per comunicare con quello remoto: Git crea automaticamente un riferimento chiamato \tc{origin}, che memorizza l'URL della repository remota.
+%
+%Per verificare i repository remoti associati, è possibile utilizzare il comando:
+%\sh{git remote -v}
+%
+%che mostra gli alias configurati e i relativi URL.
+%
+%Nel caso in cui si voglia collegare manualmente una repository locale a una remota, è possibile utilizzare il comando:
+%\sh{git remote add <alias> <URL>}
+%
+%Questa operazione è necessaria solo se la repository locale non è stata ottenuta tramite \ti{clone}.
+%
+%A questo punto, il repository locale e quello remoto risultano collegati, rendendo possibile sincronizzare le modifiche tra i due attraverso i comandi che verranno introdotti nella sezione successiva.
+%
+%
 
 
 
